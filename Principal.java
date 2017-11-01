@@ -40,19 +40,26 @@ public class Principal {
 		
 		aut.completarAutomato();
 		
-		System.out.println("Transicoes do automato: ");
+		System.out.println("Transicoes do automato inicial: ");
 		for (Transicao transicao : aut.getTransicoes()){
 			System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
 		}
 		
 		Gramatica g1 = aut.gerarGramatica();
-		System.out.println("Producoes da gramatica: ");
+		System.out.println("Producoes da gramatica gerada: ");
 		for (Transicao transicao : g1.getProducoes()){
 			if (transicao.get_final() != null){
 				System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
 			} else{
 				System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" termina");
 			}
+		}
+		
+		Automato aut1 = g1.gerarAutomato();
+		
+		System.out.println("Transicoes do automato gerado: ");
+		for (Transicao transicao : aut1.getTransicoes()){
+			System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
 		}
 
 	}

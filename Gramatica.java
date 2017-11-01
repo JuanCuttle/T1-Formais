@@ -32,6 +32,24 @@ public class Gramatica {
 		return inicial;
 	}
 	
-	
+	public Automato gerarAutomato(){
+		ArrayList<Transicao> novaTransicoes = (ArrayList<Transicao>) this.producoes.clone();
+		Estado a = new Estado("A");
+		
+		ArrayList<Estado> finais = new ArrayList<>();
+		finais.add(a);
+		for (Transicao t : this.producoes){
+			if (t.get_final() == null){
+				Transicao t1 = new Transicao(t.getInicial(), t.getLeitura(), a);
+				novaTransicoes.add(t1);
+				novaTransicoes.remove(t);
+			}
+		}
+		
+		ArrayList<Estado> novaEstados = (ArrayList<Estado>) this.getNaoTerminais().clone();
+		novaEstados.add(a);
+		Automato aut = new Automato(this.terminais, novaEstados, finais, novaTransicoes, inicial);
+		return aut;
+	}
 
 }

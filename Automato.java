@@ -135,7 +135,7 @@ public class Automato {
 		
 	}
 	
-	public Gramatica1 gerarGramatica1(){
+/*	public Gramatica1 gerarGramatica1(){
 		HashMap<String, NaoTerminal> naoTerminais = new HashMap<>();
 		HashMap<char[], Terminal> terminais = new HashMap<>();
 		NaoTerminal s = new NaoTerminal(this.getInicial().getNome());
@@ -162,5 +162,5 @@ public class Automato {
 			
 		}
 		return new Gramatica1(naoTerminais, terminais, producoes, s);
-	}
+	}*/
 }
