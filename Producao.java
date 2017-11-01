@@ -1,37 +1,24 @@
 
 public class Producao {
-	private Estado inicial;
+	private NaoTerminal vn;
 	private char leitura;
-	private Estado _final;
-	
-	public Producao (Estado inicial, char leitura, Estado _final){
-		this.inicial = inicial;
+	private NaoTerminal vn1;
+	public Producao(NaoTerminal vn, char leitura, NaoTerminal vn1) {
+		this.vn = vn;
 		this.leitura = leitura;
-		this._final = _final;
+		this.vn = vn1;
 	}
-
-	public Estado getInicial() {
-		return inicial;
+	public NaoTerminal getVn() {
+		return vn;
 	}
-
-	public void setInicial(Estado inicial) {
-		this.inicial = inicial;
-	}
-
 	public char getLeitura() {
 		return leitura;
 	}
-
-	public void setLeitura(char leitura) {
-		this.leitura = leitura;
+	public NaoTerminal getVn1() {
+		return vn;
 	}
-
-	public Estado get_final() {
-		return _final;
-	}
-
-	public void set_final(Estado _final) {
-		this._final = _final;
+	public void setVn1(NaoTerminal vn1) {
+		this.vn1 = vn1;
 	}
 	
 	

@@ -20,29 +20,41 @@ public class Principal {
 		ArrayList<Estado> finais = new ArrayList<>();
 		finais.add(q2);
 		
-		Producao a = new Producao(q0, 'a', q1);
-		Producao b = new Producao(q0, 'b', q0);
-		Producao c = new Producao(q1, 'a', q2);
-		Producao d = new Producao(q1, 'b', q1);
-		Producao e = new Producao(q2, 'a', q2);
-		Producao f = new Producao(q2, 'b', q2);
+		Transicao a = new Transicao(q0, 'a', q1);
+		Transicao b = new Transicao(q0, 'b', q0);
+		Transicao c = new Transicao(q1, 'a', q2);
+		Transicao d = new Transicao(q1, 'b', q1);
+		Transicao e = new Transicao(q2, 'a', q2);
+		Transicao f = new Transicao(q2, 'b', q2);
 		
-		ArrayList<Producao> producoes = new ArrayList<>();
+		ArrayList<Transicao> transicoes = new ArrayList<>();
 		
-		producoes.add(a);
-		producoes.add(b);
-		producoes.add(c);
-		producoes.add(d);
-		producoes.add(e);
-		producoes.add(f);
+		transicoes.add(a);
+		transicoes.add(b);
+		transicoes.add(c);
+		transicoes.add(d);
+		transicoes.add(e);
+		transicoes.add(f);
 		
-		Automato aut = new Automato(alfabeto, estados, finais, producoes, q0);
+		Automato aut = new Automato(alfabeto, estados, finais, transicoes, q0);
 		
 		aut.completarAutomato();
 		
-		for (Producao producao : aut.getProducoes()){
-			System.out.println(producao.getInicial().getNome()+" "+producao.getLeitura()+" "+producao.get_final().getNome());
+		System.out.println("Transicoes do automato: ");
+		for (Transicao transicao : aut.getTransicoes()){
+			System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
 		}
+		
+		Gramatica g1 = aut.gerarGramatica();
+		System.out.println("Producoes da gramatica: ");
+		for (Transicao transicao : g1.getProducoes()){
+			if (transicao.get_final() != null){
+				System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
+			} else{
+				System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" termina");
+			}
+		}
+
 	}
 
 }
