@@ -5,6 +5,9 @@ import java.util.ArrayList;
 public class Principal {
 
 	public static void main(String[] args) {
+		
+		//Interface.criarGramatica();
+		
 		char[] alfabeto = {'a', 'b'};
 		
 		Estado q0 = new Estado("q0");
@@ -86,6 +89,24 @@ public class Principal {
 		for (Transicao transicao : aut1.getTransicoes()){
 			System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
 		}*/
+	}
+	
+	public static Estado getEstadoPorNome(String nomeE, ArrayList<Estado> estados){
+		for (Estado e : estados){
+			if(e.getNome().equalsIgnoreCase(nomeE)){
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	public static boolean letraPertenceAoAlfabeto(char c, char[] letras){
+		for (char l : letras){
+			if(c == l){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }
