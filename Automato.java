@@ -139,7 +139,7 @@ public class Automato {
 		
 	}
 	public void minimizar(){
-		//this.removerInalcancaveis();
+		this.removerInalcancaveis();
 		this.removerMortos();
 		this.removerEquivalentes();
 	}
@@ -167,11 +167,11 @@ public class Automato {
 
 	private void removerMortos() {
 		ArrayList<Estado> acessados = new ArrayList<>();
-		//acessados.add(finais.get(0));
 		ArrayList<Estado> aux = new ArrayList<>();
 		
-		//for (Estado e : finais){
-			Estado atual = finais.get(0);
+		for (Estado e : finais){
+			//Estado atual = finais.get(0);
+			Estado atual = e;
 			do {
 				acessados = (ArrayList<Estado>) aux.clone();
 				
@@ -182,15 +182,12 @@ public class Automato {
 					if (t.get_final() == atual && !aux.contains(t.getInicial())){
 						
 						atual = t.getInicial();
-						//System.out.println(atual.getNome());
 						aux.add(atual);
 					}
 				}
-				//System.out.println(atual.getNome());
-				//System.out.println(aux);
 			
 			}while(!acessados.containsAll(aux));
-		//}
+		}
 		
 		this.estados = (ArrayList<Estado>) aux.clone();
 	}
@@ -198,6 +195,33 @@ public class Automato {
 	private void removerEquivalentes() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public boolean linguagemVazia(){
+		Automato aux = this;
+		aux.removerMortos();
+		return !aux.estados.contains(aux.inicial);
+	}
+	
+	public boolean linguagemFinita(){
+		ArrayList<Estado> aux = new ArrayList<>();
+		for (Estado e : estados) {
+			for (Transicao t : transicoes){
+				if (t.getInicial() == e){
+					if (t.get_final() == e){
+						return false;
+					} /*else {
+						for (Estado e1 : aux){
+							if (t.get_final() == e1){
+								return false;
+							}
+						}
+					}*/
+				}
+			}
+			aux.add(e);
+		}
+		return true;
 	}
 
 }

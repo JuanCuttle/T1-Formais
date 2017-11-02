@@ -44,6 +44,15 @@ public class Principal {
 		
 		Interface.mostraAutomato(aut);
 		
+		if (aut.linguagemVazia()){
+			System.out.println("O estado inicial não é fértil, logo a linguagem é vazia");
+		} else if (aut.linguagemFinita()){
+			System.out.println("Não há recursão direta ou indireta, portanto a linguagem é finita");
+		} else {
+			System.out.println("Há recursão direta ou indireta, portanto a linguagem é infinita");
+		}
+		
+		
 		aut.minimizar();
 		
 		System.out.println("Transicoes do automato minimizado: ");
@@ -64,6 +73,7 @@ public class Principal {
 		System.out.println("Transicoes do automato gerado: ");
 		
 		Interface.mostraAutomato(aut1);
+		
 		
 /*		for (Transicao transicao : g.getProducoes()){
 			if (transicao.get_final() != null){
