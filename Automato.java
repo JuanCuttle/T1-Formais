@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class Automato {
 	private boolean completo = false;
-	private boolean afnd;
+	private boolean afnd = true;
 
 	private char[] alfabeto;
 	private ArrayList<Estado> estados;
@@ -163,6 +163,20 @@ public class Automato {
 		
 		this.estados = (ArrayList<Estado>) aux.clone();
 		
+		ArrayList<Estado> aux2 = new ArrayList<>();
+		for (Estado e : this.estados){
+			if (this.finais.contains(e)){
+				aux2.add(e);
+			}
+		}
+		
+		this.finais = (ArrayList<Estado>) aux2.clone();
+/*		for (Transicao t1 : transicoes) {
+			if (!estados.contains(t1.getInicial()) || !estados.contains(t1.get_final())){
+				transicoes.remove(t1);
+			}
+		}*/
+		
 	}
 
 	private void removerMortos() {
@@ -190,6 +204,11 @@ public class Automato {
 		}
 		
 		this.estados = (ArrayList<Estado>) aux.clone();
+/*		for (Transicao t1 : this.transicoes) {
+			if (!estados.contains(t1.getInicial()) || !estados.contains(t1.get_final())){
+				this.transicoes.remove(t1);
+			}
+		}*/
 	}
 	
 	private void removerEquivalentes() {
@@ -199,10 +218,23 @@ public class Automato {
 	
 	public boolean linguagemVazia(){
 		Automato aux = this;
+		aux.completarAutomato();
 		aux.removerMortos();
-		return !aux.estados.contains(aux.inicial);
+		aux.removerInalcancaveis();
+		//boolean fim = this.temFim(); // S -> aS
+		return !aux.estados.contains(aux.inicial) || aux.finais.isEmpty();
 	}
 	
+	// Não faz sentido para automatos finitos
+/*	private boolean temFim() {
+		for (Transicao t : transicoes){
+			if (t.get_final() == null || this.getFinais().contains(t.get_final())) {
+				return true;
+			}
+		}
+		return false;
+	}*/
+
 	public boolean linguagemFinita(){
 		ArrayList<Estado> aux = new ArrayList<>();
 		for (Estado e : estados) {

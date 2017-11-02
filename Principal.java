@@ -77,6 +77,20 @@ public class Principal {
 		
 		Interface.mostraAutomato(aut1);
 		
+/*		Estado s = new Estado("S");
+		//Estado a5 = new Estado("A");
+		ArrayList<Estado> e1 = new ArrayList<>();
+		ArrayList<Estado> f1 = new ArrayList<>();
+		e1.add(s);
+		//e1.add(a5);
+		//f1.add(a5);
+		ArrayList<Transicao> tn = new ArrayList<>();
+		tn.add(new Transicao(s, 'a', s));
+		Automato teste = new Automato(alfabeto, e1, f1, tn, s);
+		System.out.println(teste.linguagemVazia());
+		
+		Interface.mostraGramatica(teste.gerarGramatica());*/
+		
 		
 /*		for (Transicao transicao : g.getProducoes()){
 			if (transicao.get_final() != null){
