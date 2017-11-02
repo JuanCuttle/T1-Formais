@@ -134,33 +134,70 @@ public class Automato {
 		}*/
 		
 	}
+
+	public void determinizar(){
+		
+	}
+	public void minimizar(){
+		//this.removerInalcancaveis();
+		this.removerMortos();
+		this.removerEquivalentes();
+	}
+	private void removerInalcancaveis() {
+		ArrayList<Estado> acessados = new ArrayList<>();
+		ArrayList<Estado> aux = new ArrayList<>();
+		
+		Estado atual = this.inicial;
+		do {
+			acessados = (ArrayList<Estado>) aux.clone();
+			
+			aux.add(atual);
+			for (Transicao t : this.transicoes){
+				if (t.getInicial() == atual && !aux.contains(t.get_final())){
+					atual = t.get_final();
+					aux.add(atual);
+				}
+			}
+			
+		}while(!aux.containsAll(acessados));
+		
+		this.estados = (ArrayList<Estado>) aux.clone();
+		
+	}
+
+	private void removerMortos() {
+		ArrayList<Estado> acessados = new ArrayList<>();
+		//acessados.add(finais.get(0));
+		ArrayList<Estado> aux = new ArrayList<>();
+		
+		//for (Estado e : finais){
+			Estado atual = finais.get(0);
+			do {
+				acessados = (ArrayList<Estado>) aux.clone();
+				
+				if (!aux.contains(atual)){
+					aux.add(atual);
+				}
+				for (Transicao t : this.transicoes){
+					if (t.get_final() == atual && !aux.contains(t.getInicial())){
+						
+						atual = t.getInicial();
+						//System.out.println(atual.getNome());
+						aux.add(atual);
+					}
+				}
+				//System.out.println(atual.getNome());
+				//System.out.println(aux);
+			
+			}while(!acessados.containsAll(aux));
+		//}
+		
+		this.estados = (ArrayList<Estado>) aux.clone();
+	}
 	
-/*	public Gramatica1 gerarGramatica1(){
-		HashMap<String, NaoTerminal> naoTerminais = new HashMap<>();
-		HashMap<char[], Terminal> terminais = new HashMap<>();
-		NaoTerminal s = new NaoTerminal(this.getInicial().getNome());
-		naoTerminais.put(s.getNome(), s);
-		HashMap<String, Producao> producoes = new HashMap<>();
-		for (Transicao t : transicoes){
-			String nome = t.getInicial().getNome();
-			if(!naoTerminais.containsKey(nome)){
-				naoTerminais.put(nome, new NaoTerminal(nome));
-			}
-			if(!terminais.containsKey(t.getLeitura())){
-				char[] l = new char[1];
-				l[0] = t.getLeitura();
-				terminais.put(l, new Terminal(t.getLeitura()));
-			}
-			String nomeF = t.get_final().getNome();
-			if(!naoTerminais.containsKey(nomeF)){
-				naoTerminais.put(nomeF, new NaoTerminal(nomeF));
-			}
-			
-			Producao p = new Producao(naoTerminais.get(t.getInicial().getNome()), t.getLeitura(), naoTerminais.get(t.get_final()
-					.getNome()));
-			producoes.put(t.getInicial().getNome().concat(t.get_final().getNome()), p);
-			
-		}
-		return new Gramatica1(naoTerminais, terminais, producoes, s);
-	}*/
+	private void removerEquivalentes() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

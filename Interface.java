@@ -1,5 +1,3 @@
-import javax.swing.JOptionPane;
-
 public class Interface {
 	public static void mostraAutomato(Automato aut) {
 		String tabela = "";

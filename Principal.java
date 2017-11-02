@@ -41,13 +41,31 @@ public class Principal {
 		aut.completarAutomato();
 		
 		System.out.println("Transicoes do automato inicial: ");
-		for (Transicao transicao : aut.getTransicoes()){
+		
+		Interface.mostraAutomato(aut);
+		
+		aut.minimizar();
+		
+		System.out.println("Transicoes do automato minimizado: ");
+		
+		Interface.mostraAutomato(aut);
+		
+/*		for (Transicao transicao : aut.getTransicoes()){
 			System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
-		}
+		}*/
 		
 		Gramatica g = aut.gerarGramatica();
 		System.out.println("Producoes da gramatica gerada: ");
-		for (Transicao transicao : g.getProducoes()){
+		
+		Interface.mostraGramatica(g);
+		
+		Automato aut1 = g.gerarAutomato();
+		
+		System.out.println("Transicoes do automato gerado: ");
+		
+		Interface.mostraAutomato(aut1);
+		
+/*		for (Transicao transicao : g.getProducoes()){
 			if (transicao.get_final() != null){
 				System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
 			} else{
@@ -55,17 +73,9 @@ public class Principal {
 			}
 		}
 		
-		Automato aut1 = g.gerarAutomato();
-		
-		System.out.println("Transicoes do automato gerado: ");
 		for (Transicao transicao : aut1.getTransicoes()){
 			System.out.println(transicao.getInicial().getNome()+" "+transicao.getLeitura()+" "+transicao.get_final().getNome());
-		}
-		
-		Interface.mostraAutomato(aut);
-		
-		Interface.mostraGramatica(g);
-
+		}*/
 	}
 
 }
