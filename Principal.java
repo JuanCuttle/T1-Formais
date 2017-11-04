@@ -14,6 +14,10 @@ public class Principal {
 		Estado q1 = new Estado("q1");
 		Estado q2 = new Estado("q2");
 		
+		q0.getEstadosInternos().add(q0);
+		q1.getEstadosInternos().add(q1);
+		q2.getEstadosInternos().add(q2);
+		
 		ArrayList<Estado> estados = new ArrayList<>();
 		
 		estados.add(q0);
@@ -30,7 +34,7 @@ public class Principal {
 		Transicao e = new Transicao(q2, 'a', q2);
 		Transicao f = new Transicao(q2, 'b', q2);
 		
-		Transicao nd = new Transicao(q0, 'a', q0);
+		//Transicao nd = new Transicao(q0, 'a', q0);
 		
 		ArrayList<Transicao> transicoes = new ArrayList<>();
 		
@@ -41,7 +45,7 @@ public class Principal {
 		transicoes.add(e);
 		transicoes.add(f);
 		
-		transicoes.add(nd);
+		//transicoes.add(nd);
 		
 		Automato aut = new Automato(alfabeto, estados, finais, transicoes, q0);
 		

@@ -309,6 +309,7 @@ public class Automato {
 								//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
 								for (Transicao t1 : transicoesTemp){
 									transicoesRemover.add(t1);
+									nd.getEstadosInternos().add(t1.get_final());
 								}
 						
 								//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
@@ -322,8 +323,13 @@ public class Automato {
 									if (tvelhas != null){
 										Interface.mostraAutomato(this);
 										for (Transicao novasTransicoes : tvelhas){
-											Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), novasTransicoes.get_final());
-											transicoesNovas.add(n);
+											Estado estadoComposto = novasTransicoes.get_final();
+											for (Estado internoDoComposto : estadoComposto.getEstadosInternos()){
+												Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), internoDoComposto);
+												if (!transicoesNovas.contains(n)){
+													transicoesNovas.add(n);
+												}
+											}
 										}
 									}
 								}
@@ -372,14 +378,33 @@ public class Automato {
 			this.estados = auxiliar.getEstados();
 			this.transicoes.addAll(transicoesNovas);
 			this.transicoes.removeAll(transicoesRemover);
-			this.redeterminizar();
-	//		this.redeterminizar();
-//			this.redeterminizar();
+			while(this.possuiNaoDeterminacao()){
+				this.redeterminizar();
+			}
 			this.afnd = false;
 		} else {
 			JOptionPane.showMessageDialog(null, "O autômato já é determinístico");
 		}
 		
+	}
+
+	private boolean possuiNaoDeterminacao() {
+		ArrayList<Estado> _finais = new ArrayList<>();
+		for (Estado e : this.getEstados()){
+			for (char c : this.getAlfabeto()){
+				_finais = new ArrayList<>();
+				for (Transicao t : this.getTransicoes()){
+					if(t.getInicial() == e && t.getLeitura() == c){
+						_finais.add(t.get_final());
+						//System.out.println(c + "   "+t.get_final().getNome());
+					}
+				}
+				if (_finais.size() > 1){
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private Estado getEstadoPorNome(String nomeNovoEstado) {
@@ -440,6 +465,7 @@ public class Automato {
 							//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
 							for (Transicao t1 : transicoesTemp){
 								transicoesRemover.add(t1);
+								nd.getEstadosInternos().add(t1.get_final());
 							}
 							
 							//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
@@ -453,8 +479,13 @@ public class Automato {
 								if (tvelhas != null){
 									Interface.mostraAutomato(this);
 									for (Transicao novasTransicoes : tvelhas){
-										Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), novasTransicoes.get_final());
-										transicoesNovas.add(n);
+										Estado _final = novasTransicoes.get_final();
+										for (Estado internoDoComposto : _final.getEstadosInternos()){
+											Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), internoDoComposto);
+											if (!this.possuiTransicao(transicoesNovas, n)){
+												transicoesNovas.add(n);
+											}
+										}
 									}
 								}
 							}
@@ -503,6 +534,16 @@ public class Automato {
 		this.estados = auxiliar.getEstados();
 		this.transicoes.addAll(transicoesNovas);
 		this.transicoes.removeAll(transicoesRemover);
+	}
+
+	private boolean possuiTransicao(ArrayList<Transicao> transicoesNovas,
+			Transicao n) {
+		for (Transicao t : transicoesNovas){
+			if (t.get_final().getNome().equals(n.get_final().getNome()) && t.getLeitura() == n.getLeitura()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean jahExiste(Automato aux, String nomeNovoEstado) {
