@@ -47,7 +47,7 @@ public class Interface {
 		// JOptionPane.showMessageDialog(null, tabela);
 	}
 
-	public static void mostraGramatica(Gramatica g) {
+	public static String mostraGramatica(Gramatica g) {
 		String gram = "";
 		for (Estado e : g.getNaoTerminais()) {
 			gram = gram + e.getNome() + " -> ";
@@ -76,6 +76,7 @@ public class Interface {
 		//JOptionPane.showMessageDialog(null, gram);
 		gram = gram + "\n";
 		System.out.println("");
+		return gram;
 	}
 	
 	public static Gramatica criarGramatica(){
@@ -133,8 +134,8 @@ public class Interface {
 					
 				}
 			}
-			
-			confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar mais uma produção?");
+			String gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicial));
+			confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar mais uma produção?\n"+"Gramatica atual:\n"+gram);
 		}
 		
 		g = new Gramatica(naoTerminais, alfabeto, producoes, inicial);

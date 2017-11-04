@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Principal {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CloneNotSupportedException {
 		
 		//Interface.criarGramatica();
 		
@@ -30,6 +30,8 @@ public class Principal {
 		Transicao e = new Transicao(q2, 'a', q2);
 		Transicao f = new Transicao(q2, 'b', q2);
 		
+		Transicao nd = new Transicao(q0, 'a', q0);
+		
 		ArrayList<Transicao> transicoes = new ArrayList<>();
 		
 		transicoes.add(a);
@@ -38,6 +40,8 @@ public class Principal {
 		transicoes.add(d);
 		transicoes.add(e);
 		transicoes.add(f);
+		
+		transicoes.add(nd);
 		
 		Automato aut = new Automato(alfabeto, estados, finais, transicoes, q0);
 		
@@ -76,6 +80,10 @@ public class Principal {
 		System.out.println("Transicoes do automato gerado: ");
 		
 		Interface.mostraAutomato(aut1);
+		
+		aut.determinizar();
+		
+		Interface.mostraAutomato(aut);
 		
 /*		Estado s = new Estado("S");
 		//Estado a5 = new Estado("A");
