@@ -1,0 +1,3 @@
+1) GR->AF adicionar os estados de dentro do composto no estado gerado (feito ali e na criação da gramatica)
+2) epsilon-transicao na determinização
+3) setar os estados compostos por 1+ finais como final, na determinização (feito)
