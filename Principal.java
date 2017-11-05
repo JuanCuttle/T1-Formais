@@ -8,7 +8,7 @@ public class Principal {
 		
 		//Interface.criarGramatica();
 		
-		char[] alfabeto = {'a', 'b'};
+		char[] alfabeto = {'a', 'b', '&'};
 		
 		Estado q0 = new Estado("q0");
 		Estado q1 = new Estado("q1");
@@ -34,7 +34,9 @@ public class Principal {
 		Transicao e = new Transicao(q2, 'a', q2);
 		Transicao f = new Transicao(q2, 'b', q2);
 		
-		//Transicao nd = new Transicao(q0, 'a', q0);
+		Transicao nd = new Transicao(q0, 'a', q0);
+		
+		//Transicao epsilon = new Transicao(q0, '&', q1);
 		
 		ArrayList<Transicao> transicoes = new ArrayList<>();
 		
@@ -45,7 +47,9 @@ public class Principal {
 		transicoes.add(e);
 		transicoes.add(f);
 		
-		//transicoes.add(nd);
+		transicoes.add(nd);
+		
+		//transicoes.add(epsilon);
 		
 		Automato aut = new Automato(alfabeto, estados, finais, transicoes, q0);
 		

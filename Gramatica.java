@@ -35,6 +35,7 @@ public class Gramatica {
 	public Automato gerarAutomato(){
 		ArrayList<Transicao> novaTransicoes = (ArrayList<Transicao>) this.producoes.clone();
 		Estado a = new Estado("A");
+		a.getEstadosInternos().add(a);
 		
 		ArrayList<Estado> finais = new ArrayList<>();
 		finais.add(a);

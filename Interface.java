@@ -137,6 +137,10 @@ public class Interface {
 			String gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicial));
 			confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar mais uma produção?\n"+"Gramatica atual:\n"+gram);
 		}
+		// Adicionar os proprios estados na composicao de cada estado
+		for (Estado nt : naoTerminais){
+			nt.getEstadosInternos().add(nt);
+		}
 		
 		g = new Gramatica(naoTerminais, alfabeto, producoes, inicial);
 		System.out.println("Gramatica gerada: ");

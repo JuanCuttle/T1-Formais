@@ -311,7 +311,17 @@ public class Automato {
 									transicoesRemover.add(t1);
 									nd.getEstadosInternos().add(t1.get_final());
 								}
-						
+								
+								// Se o estado composto possuir um estado final, ele eh final
+								boolean estadoEhFinal = false;
+								for (Estado verificarFinal : nd.getEstadosInternos()){
+									if (this.getFinais().contains(verificarFinal)){
+										estadoEhFinal = true;
+									}
+								}
+								if (estadoEhFinal){
+									this.getFinais().add(nd);
+								}
 								//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
 								// para o final de cada transicao deste estado antigo
 								//for (Transicao tnovas : transicoesTemp){
@@ -466,6 +476,16 @@ public class Automato {
 							for (Transicao t1 : transicoesTemp){
 								transicoesRemover.add(t1);
 								nd.getEstadosInternos().add(t1.get_final());
+							}
+							// Se o estado composto possuir um estado final, ele eh final
+							boolean estadoEhFinal = false;
+							for (Estado verificarFinal : nd.getEstadosInternos()){
+								if (this.getFinais().contains(verificarFinal)){
+									estadoEhFinal = true;
+								}
+							}
+							if (estadoEhFinal){
+								this.getFinais().add(nd);
 							}
 							
 							//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
