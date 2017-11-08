@@ -8,7 +8,7 @@ public class Principal {
 		
 		//Interface.criarGramatica();
 		
-		char[] alfabeto = {'a', 'b', '&'};
+		char[] alfabeto = {'a', 'b'};
 		
 		Estado q0 = new Estado("q0");
 		Estado q1 = new Estado("q1");
@@ -47,7 +47,7 @@ public class Principal {
 		transicoes.add(e);
 		transicoes.add(f);
 		
-		transicoes.add(nd);
+		//transicoes.add(nd);
 		
 		//transicoes.add(epsilon);
 		
@@ -92,6 +92,36 @@ public class Principal {
 		aut.determinizar();
 		
 		Interface.mostraAutomato(aut);
+		//////////////////////////////////////////////////////////////////////////
+		ArrayList<Estado> estados2 = new ArrayList<>();
+		Estado q3 = new Estado("q3");
+		Estado q4 = new Estado("q4");
+		q3.getEstadosInternos().add(q3);
+		q4.getEstadosInternos().add(q4);
+		
+		estados2.add(q3);
+		estados2.add(q4);
+		
+		ArrayList<Estado> finais2 = new ArrayList<>();
+		finais2.add(q4);
+		
+		ArrayList<Transicao> transicoes2 = new ArrayList<>();
+		Transicao t10 = new Transicao(q3, 'a', q4);
+		Transicao t11 = new Transicao(q3, 'b', q3);
+		Transicao t12 = new Transicao(q4, 'a', q4);
+		Transicao t13 = new Transicao(q4, 'b', q4);
+		transicoes2.add(t10);
+		transicoes2.add(t11);
+		transicoes2.add(t12);
+		transicoes2.add(t13);
+		
+		Automato aut3 = new Automato(alfabeto, estados2, finais2, transicoes2, q3);
+		Automato autU = aut.uniao(aut3);
+		autU.determinizar();
+		//autU.removerInalcancaveis();
+		//autU.removerMortos();
+		autU.minimizar();
+		Interface.mostraAutomato(autU);
 		
 /*		Estado s = new Estado("S");
 		//Estado a5 = new Estado("A");

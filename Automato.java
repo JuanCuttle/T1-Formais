@@ -43,7 +43,54 @@ public class Automato {
 	public Estado getInicial() {
 		return inicial;
 	}
+	
+	public Automato complemento(){
+		ArrayList<Estado> novosFinais = new ArrayList<>();
+		for (Estado e : this.estados){
+			if(!this.finais.contains(e)){
+				novosFinais.add(e);
+			}
+		}
+		return new Automato(this.alfabeto, this.estados, novosFinais, this.transicoes, this.inicial);
+	}
 
+	public Automato uniao(Automato aUnir){
+		Estado novoInicial = new Estado("Qinicial");
+		Estado inicial1 = this.getInicial();
+		Estado inicial2 = aUnir.getInicial();
+		ArrayList<Transicao> transicoesNovoInicial = new ArrayList<>();
+		for (Transicao t1 : this.getTransicoes()){
+			if(t1.getInicial() == inicial1){
+				Transicao nova1 = new Transicao(novoInicial, t1.getLeitura(), t1.get_final());
+				transicoesNovoInicial.add(nova1);
+			}
+		}
+		for (Transicao t2 : aUnir.getTransicoes()){
+			if(t2.getInicial() == inicial2){
+				Transicao nova2 = new Transicao(novoInicial, t2.getLeitura(), t2.get_final());
+				transicoesNovoInicial.add(nova2);
+			}
+		}
+		transicoesNovoInicial.addAll(this.getTransicoes());
+		transicoesNovoInicial.addAll(aUnir.getTransicoes());
+		ArrayList<Estado> novosEstados = new ArrayList<>();
+		
+		novosEstados.addAll(this.getEstados());
+		novosEstados.addAll(aUnir.getEstados());
+		novosEstados.add(novoInicial);
+		
+		ArrayList<Estado> novosFinais = new ArrayList<>();
+		novosFinais.addAll(this.getFinais());
+		novosFinais.addAll(aUnir.getFinais());
+		
+		return new Automato(this.getAlfabeto(), novosEstados, novosFinais, transicoesNovoInicial, novoInicial);
+	}
+	
+	public Automato interseccao(Automato aIntersec){
+		// L1 ^ L2 = not(not(L1)U(not(L2)))
+		Automato intersec = (this.complemento().uniao(aIntersec.complemento())).complemento();
+		return intersec;
+	}
 	public ArrayList<Estado> transicao(Estado inicial, char leitura) {
 		ArrayList<Estado> possiveis = new ArrayList<Estado>();
 		for (Transicao transicao : transicoes) {
@@ -62,21 +109,23 @@ public class Automato {
 
 		if (!completo) {
 			for (char caracter : alfabeto) {
-				//System.out.println("Caracter atual:"+ caracter);
-				for (Estado estado : estados) {
-					//System.out.println("Estado atual:"+ estado.getNome());
-					temtransicao = false;
-					for (Transicao transicao : transicoes) {
-						if (transicao.getInicial() == estado
-								&& transicao.getLeitura() == caracter) {
-							temtransicao = true;
+				if (caracter != '&'){
+					//System.out.println("Caracter atual:"+ caracter);
+					for (Estado estado : estados) {
+						//System.out.println("Estado atual:"+ estado.getNome());
+						temtransicao = false;
+						for (Transicao transicao : transicoes) {
+							if (transicao.getInicial() == estado
+									&& transicao.getLeitura() == caracter) {
+								temtransicao = true;
+							}
 						}
-					}
-					if (temtransicao == false) {
-						Transicao nova = new Transicao(estado, caracter,
-								estadoDeErro);
-						this.transicoes.add(nova);
-						estadoErro = true;
+						if (temtransicao == false) {
+							Transicao nova = new Transicao(estado, caracter,
+									estadoDeErro);
+							this.transicoes.add(nova);
+							estadoErro = true;
+						}
 					}
 				}
 			}
@@ -143,25 +192,39 @@ public class Automato {
 		this.removerMortos();
 		this.removerEquivalentes();
 	}
-	private void removerInalcancaveis() {
+	public void removerInalcancaveis() {
 		ArrayList<Estado> acessados = new ArrayList<>();
 		ArrayList<Estado> aux = new ArrayList<>();
 		
 		Estado atual = this.inicial;
+		aux.add(atual);
 		do {
 			acessados = (ArrayList<Estado>) aux.clone();
 			
-			aux.add(atual);
+			for (int i = 0; i<acessados.size();i++){
+				atual = acessados.get(i);
+				for (Transicao t : this.getTransicoes()){
+					if(t.getInicial() == atual){
+						if (!aux.contains(t.get_final())){
+							aux.add(t.get_final());
+						}
+					}
+				}
+			}
+/*			aux.add(atual);
+			for (int i = 0; i<this.getTransicoes().size();i++){
+				Transicao t = this.getTransicoes().get(i);
 			for (Transicao t : this.transicoes){
 				if (t.getInicial() == atual && !aux.contains(t.get_final())){
 					atual = t.get_final();
+					System.out.println(atual.getNome());
 					aux.add(atual);
 				}
-			}
+			}*/
 			
-		}while(!aux.containsAll(acessados));
+		}while(!acessados.containsAll(aux));
 		
-		this.estados = (ArrayList<Estado>) aux.clone();
+		this.estados = (ArrayList<Estado>) acessados.clone();
 		
 		ArrayList<Estado> aux2 = new ArrayList<>();
 		for (Estado e : this.estados){
@@ -179,11 +242,26 @@ public class Automato {
 		
 	}
 
-	private void removerMortos() {
+	public void removerMortos() {
 		ArrayList<Estado> acessados = new ArrayList<>();
 		ArrayList<Estado> aux = new ArrayList<>();
 		
-		for (Estado e : finais){
+		aux.addAll(this.getFinais());
+		
+		do{
+			acessados = (ArrayList<Estado>) aux.clone();
+			for (int i = 0; i<aux.size();i++){
+				for(Transicao t : this.getTransicoes()){
+					Estado atual = t.get_final();
+					if(atual==aux.get(i)){
+						if(!aux.contains(t.getInicial())){
+							aux.add(t.getInicial());
+						}
+					}
+				}
+			}
+		}while(!acessados.containsAll(aux));
+/*		for (Estado e : finais){
 			//Estado atual = finais.get(0);
 			Estado atual = e;
 			do {
@@ -201,7 +279,7 @@ public class Automato {
 				}
 			
 			}while(!acessados.containsAll(aux));
-		}
+		}*/
 		
 		this.estados = (ArrayList<Estado>) aux.clone();
 /*		for (Transicao t1 : this.transicoes) {
@@ -211,7 +289,7 @@ public class Automato {
 		}*/
 	}
 	
-	private void removerEquivalentes() {
+	public void removerEquivalentes() {
 		// TODO Auto-generated method stub
 		
 	}
@@ -292,24 +370,31 @@ public class Automato {
 					if(transicoesTemp.size() > 1){
 						String nomeNovoEstado = "[";
 						for (Transicao nomeNovo : transicoesTemp){
-							nomeNovoEstado += nomeNovo.get_final().getNome()+",";
+							for (Estado internoNovo : nomeNovo.get_final().getEstadosInternos()){
+								nomeNovoEstado += internoNovo.getNome()+",";
+							}
 						}
 						nomeNovoEstado += "]";
 						//System.out.println(nomeNovoEstado);
-						if (!nomeNovoEstado.contains("],]")){
+						if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[") && nomeNovoEstado.contains(",q")){
 							if (!jahExiste(auxiliar, nomeNovoEstado)){
 								//if(true){
 								Estado nd = new Estado(nomeNovoEstado);
 								auxiliar.estados.add(nd);
+								//System.out.println(nd.getEstadosInternos());
 								// Criar a transicao para este estado
 								Transicao nova = new Transicao(e, c, nd);
 								//auxiliar.transicoes.add(nova);
+								//if(!auxiliar.getTransicoes().contains(nova)){
 								transicoesNovas.add(nova);
+								//}
 
 								//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
 								for (Transicao t1 : transicoesTemp){
 									transicoesRemover.add(t1);
-									nd.getEstadosInternos().add(t1.get_final());
+									//if(!nd.getEstadosInternos().contains(t1.get_final())){
+										nd.getEstadosInternos().add(t1.get_final());
+									//}
 								}
 								
 								// Se o estado composto possuir um estado final, ele eh final
@@ -322,6 +407,7 @@ public class Automato {
 								if (estadoEhFinal){
 									this.getFinais().add(nd);
 								}
+								
 								//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
 								// para o final de cada transicao deste estado antigo
 								//for (Transicao tnovas : transicoesTemp){
@@ -352,7 +438,9 @@ public class Automato {
 								// Criar a transicao para este estado
 								Transicao nova = new Transicao(e, c, nd);
 								//auxiliar.transicoes.add(nova);
-								transicoesNovas.add(nova);
+								//if(!auxiliar.getTransicoes().contains(nova)){
+									transicoesNovas.add(nova);
+								//}
 
 								//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
 								for (Transicao t1 : transicoesTemp){
@@ -379,6 +467,135 @@ public class Automato {
 						}
 						
 
+					} else if (c == '&'){
+						String nomeNovoEstado1 = "[";
+						nomeNovoEstado1 += e.getNome()+",";
+						for (Transicao nomeNovo : transicoesTemp){
+							for (Estado internoNovo : nomeNovo.get_final().getEstadosInternos()){
+								nomeNovoEstado1 += internoNovo.getNome()+",";
+							}
+						}
+						nomeNovoEstado1 += "]";
+						if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")&& nomeNovoEstado1.contains(",q")){
+							if (!jahExiste(auxiliar, nomeNovoEstado1)){
+								//if(true){
+								Estado nd = new Estado(nomeNovoEstado1);
+								if (!nd.getEstadosInternos().contains(e)){
+									nd.getEstadosInternos().add(e);
+								}
+								//nd.getEstadosInternos().add
+
+								
+								auxiliar.estados.add(nd);
+								// Criar a transicao para este estado
+								//Transicao nova = new Transicao(e, c, nd);
+								//auxiliar.transicoes.add(nova);
+								//transicoesNovas.add(nova);
+
+								//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
+								for (Transicao t1 : transicoesTemp){
+									//transicoesRemover.add(t1);
+									Estado internoComp = t1.get_final();
+									if (!nd.getEstadosInternos().contains(internoComp)){
+										nd.getEstadosInternos().add(t1.get_final());
+									}
+								}
+								for (Estado interno : nd.getEstadosInternos()){
+									System.out.println(interno.getNome());
+								}
+								// Se o estado composto possuir um estado final, ele eh final
+								boolean estadoEhFinal = false;
+								for (Estado verificarFinal : nd.getEstadosInternos()){
+									if (this.getFinais().contains(verificarFinal)){
+										estadoEhFinal = true;
+									}
+								}
+								if (estadoEhFinal){
+									this.getFinais().add(nd);
+								}
+								//System.out.println(e.getNome());
+								//System.out.println("epsilon e novo");
+								ArrayList<Transicao> transicoesDoEstadoQueDerivaEpsilon = this.getTransicoesDoEstado(e);
+								for (Transicao transicao : transicoesDoEstadoQueDerivaEpsilon){
+									Transicao transicaoDoInicialParaOCompostoEpsilon = new Transicao(nd, c, transicao.get_final());
+									if(!this.possuiTransicao(auxiliar.getTransicoes(), transicaoDoInicialParaOCompostoEpsilon))
+									{
+										auxiliar.getTransicoes().add(transicaoDoInicialParaOCompostoEpsilon);
+									}
+								}
+								//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
+								// para o final de cada transicao deste estado antigo
+								for (int k = 0; k < nd.getEstadosInternos().size();k++){
+									ArrayList<Transicao> transicoesInternas = this.getTransicoes();
+									for(int l = 0; l< transicoesInternas.size();l++){
+										Transicao interna = transicoesInternas.get(l);
+										if (interna.getInicial().getNome().equals(nd.getEstadosInternos().get(k).getNome())){
+											if(!this.getTransicoesDoEstado(nd).contains(interna)){
+												Transicao novaComposto = new Transicao(nd, interna.getLeitura(), interna.get_final());
+												//if(!auxiliar.getTransicoesDoEstado(nd).contains(novaComposto)){
+												if(!transicoesNovas.contains(novaComposto)){
+													transicoesNovas.add(novaComposto);
+												}
+											}
+										}
+									}
+								}
+								//for (Transicao tnovas : transicoesTemp){
+/*								for (int k = 0; k < transicoesTemp.size(); k++){
+									Transicao kt = transicoesTemp.get(k);
+									ArrayList<Transicao> tvelhas = this.getTransicoesDoEstado(kt.get_final());
+									// Tenho o array das transicoes que saem dos estados que compoem o composto
+									// Agora, para cada uma delas, criar as transicoes que saem delas no novo estado
+									if (tvelhas != null){
+										Interface.mostraAutomato(this);
+										for (Transicao novasTransicoes : tvelhas){
+											Estado estadoComposto = novasTransicoes.get_final();
+											for (Estado internoDoComposto : estadoComposto.getEstadosInternos()){
+												Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), internoDoComposto);
+												if (!transicoesNovas.contains(n)){
+													transicoesNovas.add(n);
+												}
+											}
+										}
+									}
+								}*/
+							
+								// Se o estado nao eh errado, mas ja existe, passar as transicoes para esse estado
+							} else {
+								//if(true){
+								Estado nd = this.getEstadoPorNome(nomeNovoEstado1);
+								//auxiliar.estados.add(nd);
+								// Criar a transicao para este estado
+								//Transicao nova = new Transicao(e, c, nd);
+								//auxiliar.transicoes.add(nova);
+								//transicoesNovas.add(nova);
+
+								//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
+/*								for (Transicao t1 : transicoesTemp){
+									transicoesRemover.add(t1);
+								}*/
+								//System.out.println("epsilon mas ja existe");
+								Interface.mostraAutomato(this);
+								//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
+								// para o final de cada transicao deste estado antigo
+								//for (Transicao tnovas : transicoesTemp){
+								for (int k = 0; k < transicoesTemp.size(); k++){
+									Transicao kt = transicoesTemp.get(k);
+									ArrayList<Transicao> tvelhas = this.getTransicoesDoEstado(kt.get_final());
+									// Tenho o array das transicoes que saem dos estados que compoem o composto
+									// Agora, para cada uma delas, criar as transicoes que saem delas no novo estado
+									if (tvelhas != null){
+										Interface.mostraAutomato(this);
+										for (Transicao novasTransicoes : tvelhas){
+												Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), novasTransicoes.get_final());
+												if (!auxiliar.getTransicoesDoEstado(nd).contains(n)){
+													transicoesNovas.add(n);
+												}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -391,6 +608,8 @@ public class Automato {
 			while(this.possuiNaoDeterminacao()){
 				this.redeterminizar();
 			}
+/*			this.completo = false;
+			this.completarAutomato();*/
 			this.afnd = false;
 		} else {
 			JOptionPane.showMessageDialog(null, "O autômato já é determinístico");
@@ -458,24 +677,35 @@ public class Automato {
 				if(transicoesTemp.size() > 1){
 					String nomeNovoEstado = "[";
 					for (Transicao nomeNovo : transicoesTemp){
-						nomeNovoEstado += nomeNovo.get_final().getNome()+",";
+						for (Estado internoNovo : nomeNovo.get_final().getEstadosInternos()){
+							nomeNovoEstado += internoNovo.getNome()+",";
+						}
 					}
 					nomeNovoEstado += "]";
 					//System.out.println(nomeNovoEstado);
-					if (!nomeNovoEstado.contains("],]")){
+					if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[") && nomeNovoEstado.contains(",q")){
 						if (!jahExiste(auxiliar, nomeNovoEstado)){
 							//if(true){
 							Estado nd = new Estado(nomeNovoEstado);
+							if (!nd.getEstadosInternos().contains(e)){
+								nd.getEstadosInternos().add(e);
+							}
+							
 							auxiliar.estados.add(nd);
 							// Criar a transicao para este estado
 							Transicao nova = new Transicao(e, c, nd);
 							//auxiliar.transicoes.add(nova);
-							transicoesNovas.add(nova);
+							if(!auxiliar.getTransicoes().contains(nova)){
+								transicoesNovas.add(nova);
+							}
 
 							//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
 							for (Transicao t1 : transicoesTemp){
 								transicoesRemover.add(t1);
-								nd.getEstadosInternos().add(t1.get_final());
+								Estado internoComp = t1.get_final();
+								if (!nd.getEstadosInternos().contains(internoComp)){
+									nd.getEstadosInternos().add(t1.get_final());
+								}
 							}
 							// Se o estado composto possuir um estado final, ele eh final
 							boolean estadoEhFinal = false;
@@ -488,6 +718,9 @@ public class Automato {
 								this.getFinais().add(nd);
 							}
 							
+							for (Estado interno : nd.getEstadosInternos()){
+								System.out.println(interno.getNome());
+							}
 							//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
 							// para o final de cada transicao deste estado antigo
 							//for (Transicao tnovas : transicoesTemp){
@@ -518,7 +751,9 @@ public class Automato {
 							// Criar a transicao para este estado
 							Transicao nova = new Transicao(e, c, nd);
 							//auxiliar.transicoes.add(nova);
-							transicoesNovas.add(nova);
+							if (!auxiliar.getTransicoes().contains(nova)){
+								transicoesNovas.add(nova);
+							}
 
 							//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
 							for (Transicao t1 : transicoesTemp){
@@ -545,6 +780,108 @@ public class Automato {
 					}
 					
 
+				} else if (c == '&'){
+					String nomeNovoEstado1 = "[";
+					nomeNovoEstado1 += e.getNome()+", ";
+					for (Transicao nomeNovo : transicoesTemp){
+						for (Estado internoNovo : nomeNovo.get_final().getEstadosInternos()){
+							nomeNovoEstado1 += internoNovo.getNome()+",";
+						}
+					}
+					nomeNovoEstado1 += "]";
+					if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")&& nomeNovoEstado1.contains(",q")){
+						if (!jahExiste(auxiliar, nomeNovoEstado1)){
+							//if(true){
+							Estado nd = new Estado(nomeNovoEstado1);
+							auxiliar.estados.add(nd);
+							
+							nd.getEstadosInternos().add(e);
+							// Criar a transicao para este estado
+							//Transicao nova = new Transicao(e, c, nd);
+							//auxiliar.transicoes.add(nova);
+							//transicoesNovas.add(nova);
+
+							//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
+							for (Transicao t1 : transicoesTemp){
+								//transicoesRemover.add(t1);
+								if (!nd.getEstadosInternos().contains(t1.get_final())){
+									nd.getEstadosInternos().add(t1.get_final());
+								}
+							}
+							
+							// Se o estado composto possuir um estado final, ele eh final
+							boolean estadoEhFinal = false;
+							for (Estado verificarFinal : nd.getEstadosInternos()){
+								if (this.getFinais().contains(verificarFinal)){
+									estadoEhFinal = true;
+								}
+							}
+							if (estadoEhFinal){
+								this.getFinais().add(nd);
+							}
+							
+/*							ArrayList<Transicao> transicoesDoEstadoQueDerivaEpsilon = this.getTransicoesDoEstado(e);
+							for (Transicao transicao : transicoesDoEstadoQueDerivaEpsilon){
+								transicoesTemp.add(transicao);
+							}*/
+							//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
+							// para o final de cada transicao deste estado antigo
+							//for (Transicao tnovas : transicoesTemp){
+							for (int k = 0; k < transicoesTemp.size(); k++){
+								Transicao kt = transicoesTemp.get(k);
+								ArrayList<Transicao> tvelhas = this.getTransicoesDoEstado(kt.get_final());
+								// Tenho o array das transicoes que saem dos estados que compoem o composto
+								// Agora, para cada uma delas, criar as transicoes que saem delas no novo estado
+								if (tvelhas != null){
+									Interface.mostraAutomato(this);
+									for (Transicao novasTransicoes : tvelhas){
+										Estado estadoComposto = novasTransicoes.get_final();
+										for (Estado internoDoComposto : estadoComposto.getEstadosInternos()){
+											Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), internoDoComposto);
+											if (!this.getTransicoesDoEstado(nd).contains(n)){
+												transicoesNovas.add(n);
+											}
+										}
+									}
+								}
+							}
+						
+							// Se o estado nao eh errado, mas ja existe, passar as transicoes para esse estado
+						} else {
+							//if(true){
+							Estado nd = this.getEstadoPorNome(nomeNovoEstado1);
+							//auxiliar.estados.add(nd);
+							// Criar a transicao para este estado
+							Transicao nova = new Transicao(e, c, nd);
+							//auxiliar.transicoes.add(nova);
+							//transicoesNovas.add(nova);
+
+							//Remover as transicoes para os estados antigos (agora, todas vão para o estado conjunto)
+/*							for (Transicao t1 : transicoesTemp){
+								transicoesRemover.add(t1);
+							}*/
+							Interface.mostraAutomato(this);
+							//Para cada estado que compoe o estado novo, criar a transicao deste estado novo,
+							// para o final de cada transicao deste estado antigo
+							//for (Transicao tnovas : transicoesTemp){
+								for (int k = 0; k < transicoesTemp.size(); k++){
+								Transicao kt = transicoesTemp.get(k);
+								ArrayList<Transicao> tvelhas = this.getTransicoesDoEstado(kt.get_final());
+								// Tenho o array das transicoes que saem dos estados que compoem o composto
+								// Agora, para cada uma delas, criar as transicoes que saem delas no novo estado
+								if (tvelhas != null){
+									Interface.mostraAutomato(this);
+									for (Transicao novasTransicoes : tvelhas){
+										
+										Transicao n = new Transicao(nd, novasTransicoes.getLeitura(), novasTransicoes.get_final());
+										if(!this.getTransicoesDoEstado(nd).contains(n)){
+											transicoesNovas.add(n);
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
