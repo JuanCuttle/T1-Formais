@@ -84,7 +84,7 @@ public class Interface {
 		ArrayList<Estado> naoTerminais = new ArrayList<>();
 		ArrayList<Transicao> producoes = new ArrayList<>();
 		
-		char[] alfabeto = new char[10];
+		char[] alfabeto = new char[26];
 		int i = -1;
 		int mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar um símbolo (terminal) ao alfabeto?");
 		while(mais == 0) {
@@ -143,8 +143,95 @@ public class Interface {
 		}
 		
 		g = new Gramatica(naoTerminais, alfabeto, producoes, inicial);
+		g.setPosicaoTerminais(i);
 		System.out.println("Gramatica gerada: ");
 		Interface.mostraGramatica(g);
 		return g;
+	}
+
+	public static void editarGramatica(Gramatica gramatica) {
+		ArrayList<Estado> naoTerminais = gramatica.getNaoTerminais();
+		ArrayList<Transicao> producoes = gramatica.getProducoes();
+		
+		char[] alfabeto = gramatica.getTerminais();
+		int i = gramatica.getPosicaoTerminais();
+		int mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar um símbolo (terminal) ao alfabeto?");
+		while(mais == 0) {
+			String caracter = JOptionPane.showInputDialog("Digite o caracter (simbolo único, minusculo ou digito):");
+			char c = caracter.charAt(0);
+			boolean jahExiste = false;
+			for (char letras : alfabeto){
+				if (letras == c){
+					jahExiste = true;
+				}
+			}
+			if (!jahExiste){
+				i++;
+				alfabeto[i] = c;
+			}
+			mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar mais um símbolo terminal?");
+		}
+		
+		String nomeEstado = JOptionPane.showInputDialog("Digite o nome do simbolo inicial:");
+		Estado inicialNovo = Principal.getEstadoPorNome(nomeEstado, naoTerminais); 
+		if (inicialNovo != null){
+			gramatica.setInicial(inicialNovo);
+		} else {
+			Estado inicial = new Estado(nomeEstado);
+			naoTerminais.add(inicial);
+			gramatica.setInicial(inicialNovo);
+		}
+/*		int inicialFinal = JOptionPane.showConfirmDialog(null, "O simbolo inicial é final?");
+		if (inicialFinal == 0){
+			finais.add(inicial);
+		}*/
+		int confirmE = JOptionPane.showConfirmDialog(null, "Deseja criar um simbolo não-terminal?");
+		while (confirmE == 0){
+			String nome = JOptionPane.showInputDialog("Digite o nome do simbolo não-terminal novo:");
+			Estado estadoNovo = Principal.getEstadoPorNome(nome, naoTerminais);
+			if (estadoNovo == null){
+				Estado novo = new Estado(nome);
+				naoTerminais.add(novo);
+			} else {
+				JOptionPane.showMessageDialog(null, "Este estado já existe!");
+			}
+			
+			confirmE = JOptionPane.showConfirmDialog(null, "Deseja criar mais um simbolo terminal?");
+		}
+		
+		int confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar uma produção?");
+		while (confirmP == 0){
+			String nomeI = JOptionPane.showInputDialog("Digite o nome do estado no lado esquerdo da produção nova:");
+			
+			Estado ladoEsquerdo = Principal.getEstadoPorNome(nomeI, naoTerminais);
+			if (ladoEsquerdo != null){
+				String letra = JOptionPane.showInputDialog("Digite o caracter gatilho da produção (simbolo único, minusculo ou digito):");
+				char l = letra.charAt(0);
+				if (Principal.letraPertenceAoAlfabeto(l, alfabeto)){
+					String nomeF = JOptionPane.showInputDialog("Digite o nome do estado no lado direito da produção nova (se não houver, deixe em branco):");
+					if (!nomeF.equalsIgnoreCase("")){
+						Estado ladoDireito = Principal.getEstadoPorNome(nomeF, naoTerminais);
+						if (ladoDireito != null) {
+							Transicao nova = new Transicao(ladoEsquerdo, l, ladoDireito);
+							if (!gramatica.getProducoes().contains(nova)){
+								producoes.add(nova);
+							 }
+						}
+					} else{
+						Transicao nova = new Transicao(ladoEsquerdo, l, null);
+						if (!gramatica.getProducoes().contains(nova)){
+							producoes.add(nova);
+						}
+					}
+					
+				}
+			}
+			String gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+			confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar mais uma produção?\n"+"Gramatica atual:\n"+gram);
+		}
+		// Adicionar os proprios estados na composicao de cada estado
+		for (Estado nt : naoTerminais){
+			nt.getEstadosInternos().add(nt);
+		}		
 	}
 }

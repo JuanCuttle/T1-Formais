@@ -4,6 +4,10 @@ import java.util.ArrayList;
 
 public class Principal {
 
+	static ArrayList<Gramatica> gramaticasCriadas = new ArrayList<>();
+	//static ArrayList<Expressao> expressoesCriadas = new ArrayList<>();
+	static ArrayList<Automato> automatosCriados = new ArrayList<>();
+	
 	public static void main(String[] args) throws CloneNotSupportedException {
 		
 		//Interface.criarGramatica();
@@ -122,6 +126,8 @@ public class Principal {
 		//autU.removerMortos();
 		autU.minimizar();
 		Interface.mostraAutomato(autU);
+		
+		System.out.println(aut.linguagensIguais(aut));
 		
 /*		Estado s = new Estado("S");
 		//Estado a5 = new Estado("A");

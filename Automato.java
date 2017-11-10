@@ -44,6 +44,12 @@ public class Automato {
 		return inicial;
 	}
 	
+	public boolean linguagensIguais(Automato aut){
+		Automato primeiro = this.interseccao(aut.complemento());
+		Automato segundo = aut.interseccao(this.complemento());
+		return primeiro.linguagemVazia() && segundo.linguagemVazia();
+	}
+	
 	public Automato complemento(){
 		ArrayList<Estado> novosFinais = new ArrayList<>();
 		for (Estado e : this.estados){

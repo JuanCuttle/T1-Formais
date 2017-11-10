@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 
 public class Gramatica {
+	
+	private int posicaoTerminais;
 
 	private ArrayList<Estado> naoTerminais;
 	private char[] terminais;
@@ -51,6 +53,18 @@ public class Gramatica {
 		novaEstados.add(a);
 		Automato aut = new Automato(this.terminais, novaEstados, finais, novaTransicoes, inicial);
 		return aut;
+	}
+
+	public void setInicial(Estado inicialNovo) {
+		this.inicial = inicialNovo;
+	}
+
+	public int getPosicaoTerminais() {
+		return posicaoTerminais;
+	}
+
+	public void setPosicaoTerminais(int posicaoTerminais) {
+		this.posicaoTerminais = posicaoTerminais;
 	}
 
 }
