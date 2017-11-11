@@ -174,5 +174,35 @@ public class Principal {
 		}
 		return false;
 	}
+	
+	public static boolean possuiProducao(ArrayList<Transicao> producoes, Estado i, char l, Estado f) {
+		for (Transicao t : producoes){
+			if(f != null){
+				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l && t.get_final().getNome().equals(f.getNome())){
+					return true;
+				}
+			} else {
+				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static Transicao getProducao(ArrayList<Transicao> producoes, Estado i, char l, Estado f) {
+		for (Transicao t : producoes){
+			if(f != null){
+				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l && t.get_final().getNome().equals(f.getNome())){
+					return t;
+				}
+			} else {
+				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l){
+					return t;
+				}
+			}
+		}
+		return null;
+	}
 
 }

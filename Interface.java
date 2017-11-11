@@ -125,11 +125,15 @@ public class Interface {
 						Estado ladoDireito = Principal.getEstadoPorNome(nomeF, naoTerminais);
 						if (ladoDireito != null) {
 							Transicao nova = new Transicao(ladoEsquerdo, l, ladoDireito);
-							producoes.add(nova);
+							if (!Principal.possuiProducao(producoes, ladoEsquerdo, l, ladoDireito)){
+								producoes.add(nova);
+							}
 						}
 					} else{
 						Transicao nova = new Transicao(ladoEsquerdo, l, null);
-						producoes.add(nova);
+						if (!Principal.possuiProducao(producoes, ladoEsquerdo, l, null)){
+							producoes.add(nova);
+						}
 					}
 					
 				}
@@ -155,6 +159,10 @@ public class Interface {
 		
 		char[] alfabeto = gramatica.getTerminais();
 		int i = gramatica.getPosicaoTerminais();
+		ArrayList<Character> novoAlfabeto = new ArrayList<>();
+		for (int a = 0; a < alfabeto.length; a++){
+				novoAlfabeto.add(alfabeto[a]);
+		}
 		int mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar um símbolo (terminal) ao alfabeto?");
 		while(mais == 0) {
 			String caracter = JOptionPane.showInputDialog("Digite o caracter (simbolo único, minusculo ou digito):");
@@ -168,8 +176,33 @@ public class Interface {
 			if (!jahExiste){
 				i++;
 				alfabeto[i] = c;
+				novoAlfabeto.add(c);
 			}
 			mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar mais um símbolo terminal?");
+		}
+		
+		int menos = JOptionPane.showConfirmDialog(null, "Deseja remover um símbolo (terminal) do alfabeto?");
+		while(menos == 0) {
+			String caracter = JOptionPane.showInputDialog("Digite o caracter (simbolo único, minusculo ou digito):");
+			char c = caracter.charAt(0);
+			boolean jahExiste = false;
+			for (char letras : alfabeto){
+				if (letras == c){
+					jahExiste = true;
+				}
+			}
+			if (jahExiste){
+				novoAlfabeto.remove(c);
+			}
+			menos = JOptionPane.showConfirmDialog(null, "Deseja remover mais um símbolo terminal?");
+		}
+		//System.out.println(novoAlfabeto);
+		gramatica.setTerminais(novoAlfabeto);
+		for (int index = 0; index < producoes.size();index++){
+			Transicao trans = producoes.get(index);
+			if(!novoAlfabeto.contains(trans.getLeitura())){
+				producoes.remove(trans);
+			}
 		}
 		
 		String nomeEstado = JOptionPane.showInputDialog("Digite o nome do simbolo inicial:");
@@ -196,10 +229,31 @@ public class Interface {
 				JOptionPane.showMessageDialog(null, "Este estado já existe!");
 			}
 			
-			confirmE = JOptionPane.showConfirmDialog(null, "Deseja criar mais um simbolo terminal?");
+			confirmE = JOptionPane.showConfirmDialog(null, "Deseja criar mais um simbolo não-terminal?");
 		}
 		
-		int confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar uma produção?");
+		int confirmE2 = JOptionPane.showConfirmDialog(null, "Deseja remover um simbolo não-terminal?");
+		while (confirmE2 == 0){
+			String nome = JOptionPane.showInputDialog("Digite o nome do simbolo não-terminal a remover:");
+			Estado estadoNovo = Principal.getEstadoPorNome(nome, naoTerminais);
+			if (estadoNovo != null){
+				naoTerminais.remove(estadoNovo);
+			} else {
+				JOptionPane.showMessageDialog(null, "Este simbolo não existe!");
+			}
+			
+			confirmE2 = JOptionPane.showConfirmDialog(null, "Deseja remover mais um simbolo não-terminal?");
+		}
+		
+		for (int index = 0; index < producoes.size();index++){
+			Transicao trans = producoes.get(index);
+			if(!naoTerminais.contains(trans.getInicial()) || !naoTerminais.contains(trans.get_final()) && trans.get_final() != null){
+				producoes.remove(trans);
+			}
+		}
+		
+		String gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+		int confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar uma produção?\n"+"Gramatica atual:\n"+gram);
 		while (confirmP == 0){
 			String nomeI = JOptionPane.showInputDialog("Digite o nome do estado no lado esquerdo da produção nova:");
 			
@@ -213,21 +267,60 @@ public class Interface {
 						Estado ladoDireito = Principal.getEstadoPorNome(nomeF, naoTerminais);
 						if (ladoDireito != null) {
 							Transicao nova = new Transicao(ladoEsquerdo, l, ladoDireito);
-							if (!gramatica.getProducoes().contains(nova)){
-								producoes.add(nova);
-							 }
+							//if (!gramatica.getProducoes().contains(nova)){
+								if (!Principal.possuiProducao(producoes, ladoEsquerdo, l, ladoDireito)){
+									producoes.add(nova);
+								}
+							 //}
 						}
 					} else{
 						Transicao nova = new Transicao(ladoEsquerdo, l, null);
-						if (!gramatica.getProducoes().contains(nova)){
-							producoes.add(nova);
-						}
+						//if (!gramatica.getProducoes().contains(nova)){
+							if (!Principal.possuiProducao(producoes, ladoEsquerdo, l, null)){
+								producoes.add(nova);
+							}
+						//}
 					}
 					
 				}
 			}
-			String gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+			gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
 			confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar mais uma produção?\n"+"Gramatica atual:\n"+gram);
+		}
+		
+		int confirmP2 = JOptionPane.showConfirmDialog(null, "Deseja remover uma produção?\n"+"Gramatica atual:\n"+gram);
+		while (confirmP2 == 0){
+			String nomeI = JOptionPane.showInputDialog("Digite o nome do estado no lado esquerdo da produção a remover:");
+			
+			Estado ladoEsquerdo = Principal.getEstadoPorNome(nomeI, naoTerminais);
+			if (ladoEsquerdo != null){
+				String letra = JOptionPane.showInputDialog("Digite o caracter gatilho da produção (simbolo único, minusculo ou digito):");
+				char l = letra.charAt(0);
+				if (Principal.letraPertenceAoAlfabeto(l, alfabeto)){
+					String nomeF = JOptionPane.showInputDialog("Digite o nome do estado no lado direito da produção a remover (se não houver, deixe em branco):");
+					if (!nomeF.equalsIgnoreCase("")){
+						Estado ladoDireito = Principal.getEstadoPorNome(nomeF, naoTerminais);
+						if (ladoDireito != null) {
+							//Transicao nova = new Transicao(ladoEsquerdo, l, ladoDireito);
+							//if (gramatica.getProducoes().contains(nova)){
+								if (Principal.possuiProducao(producoes, ladoEsquerdo, l, ladoDireito)){
+									producoes.remove(Principal.getProducao(producoes, ladoEsquerdo, l, ladoDireito));
+								}
+							 //}
+						}
+					} else{
+						//Transicao nova = new Transicao(ladoEsquerdo, l, null);
+						//if (gramatica.getProducoes().contains(nova)){
+							if (Principal.possuiProducao(producoes, ladoEsquerdo, l, null)){
+								producoes.remove(Principal.getProducao(producoes, ladoEsquerdo, l, null));
+							}
+						//}
+					}
+					
+				}
+			}
+			gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+			confirmP2 = JOptionPane.showConfirmDialog(null, "Deseja remover mais uma produção?\n"+"Gramatica atual:\n"+gram);
 		}
 		// Adicionar os proprios estados na composicao de cada estado
 		for (Estado nt : naoTerminais){

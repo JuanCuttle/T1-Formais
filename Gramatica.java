@@ -67,4 +67,13 @@ public class Gramatica {
 		this.posicaoTerminais = posicaoTerminais;
 	}
 
+	public void setTerminais(ArrayList<Character> novoAlfabeto) {
+		this.terminais = new char[26];
+		for (int l = 0; l < novoAlfabeto.size()-1;l++){
+			Character letra2 = novoAlfabeto.get(l);
+			this.terminais[l] = letra2;
+		}
+	}
+
+
 }
