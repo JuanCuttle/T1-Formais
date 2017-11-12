@@ -938,4 +938,17 @@ public class Automato {
 		return tPorEstado;
 	}
 
+	@SuppressWarnings("unchecked")
+	public void complementar() {
+		ArrayList<Estado> novosFinais = new ArrayList<>();
+		for (Estado e : this.estados){
+			if(!this.finais.contains(e)){
+				novosFinais.add(e);
+			}
+		}
+		this.finais = new ArrayList<Estado>();
+		this.finais = (ArrayList<Estado>) novosFinais.clone();
+		
+	}
+
 }

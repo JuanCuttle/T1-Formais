@@ -90,7 +90,7 @@ public class AtorUsuario extends JFrame {
 					automatos += Interface.mostraAutomato(aut);
 					i++;
 				}
-				confirmP = JOptionPane.showInputDialog(null, "Deseja determinizar qual autômato?\n"+automatos);
+				confirmP = JOptionPane.showInputDialog(null, "Deseja minimizar qual autômato?\n"+automatos);
 				if (!confirmP.equals("")){
 					int escolhida = Integer.parseInt(confirmP);
 					Principal.automatosCriados.get(escolhida).minimizar();
@@ -103,11 +103,75 @@ public class AtorUsuario extends JFrame {
 		JButton btnNewButton_2 = new JButton("Uni\u00E3o");
 		btnNewButton_2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				String confirmP;
+				int i = 0;
+				String automatos = "";
+				for (Automato aut : Principal.automatosCriados){
+					automatos += "\nAutomato "+i+":\n";
+					automatos += Interface.mostraAutomato(aut);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Selecione o primeiro autômato:\n"+automatos);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					//Principal.automatosCriados.get(escolhida).complemento();
+					String confirmP2;
+					int i2 = 0;
+					String automatos2 = "";
+					for (Automato aut : Principal.automatosCriados){
+						automatos2 += "\nAutomato "+i2+":\n";
+						automatos2 += Interface.mostraAutomato(aut);
+						i2++;
+					}
+					confirmP2 = JOptionPane.showInputDialog(null, "Selecione o segundo autômato:\n"+automatos2);
+					if (!confirmP.equals("")){
+						int escolhida2 = Integer.parseInt(confirmP2);
+						Automato um = Principal.automatosCriados.get(escolhida);
+						Automato dois = Principal.automatosCriados.get(escolhida2);
+						Principal.automatosCriados.add(um.uniao(dois));
+						
+					}
+					
+				}
 			}
 		});
 		mnAutmatos.add(btnNewButton_2);
 		
 		JButton btnNewButton_3 = new JButton("Intersec\u00E7\u00E3o");
+		btnNewButton_3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String confirmP;
+				int i = 0;
+				String automatos = "";
+				for (Automato aut : Principal.automatosCriados){
+					automatos += "\nAutomato "+i+":\n";
+					automatos += Interface.mostraAutomato(aut);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Selecione o primeiro autômato:\n"+automatos);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					//Principal.automatosCriados.get(escolhida).complemento();
+					String confirmP2;
+					int i2 = 0;
+					String automatos2 = "";
+					for (Automato aut : Principal.automatosCriados){
+						automatos2 += "\nAutomato "+i2+":\n";
+						automatos2 += Interface.mostraAutomato(aut);
+						i2++;
+					}
+					confirmP2 = JOptionPane.showInputDialog(null, "Selecione o segundo autômato:\n"+automatos2);
+					if (!confirmP.equals("")){
+						int escolhida2 = Integer.parseInt(confirmP2);
+						Automato um = Principal.automatosCriados.get(escolhida).complemento();
+						Automato dois = Principal.automatosCriados.get(escolhida2).complemento();
+						Principal.automatosCriados.add((um.uniao(dois)).complemento());
+						
+					}
+					
+				}
+			}
+		});
 		mnAutmatos.add(btnNewButton_3);
 		
 		JButton btnNewButton_4 = new JButton("Complemento");
@@ -121,10 +185,10 @@ public class AtorUsuario extends JFrame {
 					automatos += Interface.mostraAutomato(aut);
 					i++;
 				}
-				confirmP = JOptionPane.showInputDialog(null, "Deseja determinizar qual autômato?\n"+automatos);
+				confirmP = JOptionPane.showInputDialog(null, "Deseja complementar qual autômato?\n"+automatos);
 				if (!confirmP.equals("")){
 					int escolhida = Integer.parseInt(confirmP);
-					Principal.automatosCriados.get(escolhida).complemento();
+					Principal.automatosCriados.get(escolhida).complementar();
 					
 				}
 			}
@@ -151,7 +215,7 @@ public class AtorUsuario extends JFrame {
 					gramaticas += Interface.mostraGramatica(g);
 					i++;
 				}
-				confirmP = JOptionPane.showInputDialog(null, "Deseja editar qual gramatica?\n"+gramaticas);
+				confirmP = JOptionPane.showInputDialog(null, "Gerar a partir de qual gramatica?\n"+gramaticas);
 				if (!confirmP.equals("")){
 					int escolhida = Integer.parseInt(confirmP);
 					Principal.automatosCriados.add(Principal.gramaticasCriadas.get(escolhida).gerarAutomato());
@@ -181,10 +245,10 @@ public class AtorUsuario extends JFrame {
 					gramaticas += Interface.mostraGramatica(g);
 					i++;
 				}
-				confirmP = JOptionPane.showInputDialog(null, "Deseja editar qual gramatica?\n"+gramaticas);
+				confirmP = JOptionPane.showInputDialog(null, "Deseja editar qual ER?\n"+gramaticas);
 				if (!confirmP.equals("")){
 					int escolhida = Integer.parseInt(confirmP);
-					Interface.editarGramatica(Principal.gramaticasCriadas.get(escolhida));
+					//Interface.editarGramatica(Principal.gramaticasCriadas.get(escolhida));
 					
 				}
 			}
