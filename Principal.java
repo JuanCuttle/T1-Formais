@@ -12,7 +12,9 @@ public class Principal {
 		
 		//Interface.criarGramatica();
 		
-		char[] alfabeto = {'a', 'b'};
+		ArrayList<Character> alfabeto = new ArrayList<>();
+		alfabeto.add('a');
+		alfabeto.add('b');
 		
 		Estado q0 = new Estado("q0");
 		Estado q1 = new Estado("q1");
@@ -129,6 +131,7 @@ public class Principal {
 		
 		System.out.println(aut.linguagensIguais(aut));
 		
+		
 /*		Estado s = new Estado("S");
 		//Estado a5 = new Estado("A");
 		ArrayList<Estado> e1 = new ArrayList<>();
@@ -166,7 +169,7 @@ public class Principal {
 		return null;
 	}
 	
-	public static boolean letraPertenceAoAlfabeto(char c, char[] letras){
+	public static boolean letraPertenceAoAlfabeto(char c, ArrayList<Character> letras){
 		for (char l : letras){
 			if(c == l){
 				return true;
@@ -182,7 +185,7 @@ public class Principal {
 					return true;
 				}
 			} else {
-				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l){
+				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l && t.get_final() == null){
 					return true;
 				}
 			}
@@ -197,7 +200,7 @@ public class Principal {
 					return t;
 				}
 			} else {
-				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l){
+				if (t.getInicial().getNome().equals(i.getNome()) && t.getLeitura() == l && t.get_final() == null){
 					return t;
 				}
 			}

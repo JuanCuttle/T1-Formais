@@ -6,11 +6,11 @@ public class Gramatica {
 	private int posicaoTerminais;
 
 	private ArrayList<Estado> naoTerminais;
-	private char[] terminais;
+	private ArrayList<Character> terminais;
 	private ArrayList<Transicao> producoes;
 	private Estado inicial;
 
-	public Gramatica(ArrayList<Estado> estados, char[] alfabeto,
+	public Gramatica(ArrayList<Estado> estados, ArrayList<Character> alfabeto,
 			ArrayList<Transicao> transicoes, Estado inicial) {
 		this.naoTerminais = estados;
 		this.terminais = alfabeto;
@@ -22,7 +22,7 @@ public class Gramatica {
 		return naoTerminais;
 	}
 
-	public char[] getTerminais() {
+	public ArrayList<Character> getTerminais() {
 		return terminais;
 	}
 
@@ -68,11 +68,7 @@ public class Gramatica {
 	}
 
 	public void setTerminais(ArrayList<Character> novoAlfabeto) {
-		this.terminais = new char[26];
-		for (int l = 0; l < novoAlfabeto.size()-1;l++){
-			Character letra2 = novoAlfabeto.get(l);
-			this.terminais[l] = letra2;
-		}
+		this.terminais = novoAlfabeto;
 	}
 
 

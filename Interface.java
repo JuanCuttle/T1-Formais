@@ -3,11 +3,13 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class Interface {
-	public static void mostraAutomato(Automato aut) {
+	public static String mostraAutomato(Automato aut) {
 		String tabela = "";
-		for (char c : aut.getAlfabeto()) {
-			tabela = tabela + ("      |   " + c);
-			System.out.print("      |   " + c);
+		for (Character c : aut.getAlfabeto()) {
+			//if (!c.equals('\0')){
+				tabela = tabela + ("      |   " + c);
+				System.out.print("      |   " + c);
+			//}
 		}
 		tabela += ("\n");
 		System.out.println("");
@@ -44,7 +46,8 @@ public class Interface {
 			tabela += ("\n");
 			System.out.println("");
 		}
-		// JOptionPane.showMessageDialog(null, tabela);
+		//JOptionPane.showMessageDialog(null, tabela);
+		return tabela;
 	}
 
 	public static String mostraGramatica(Gramatica g) {
@@ -84,14 +87,14 @@ public class Interface {
 		ArrayList<Estado> naoTerminais = new ArrayList<>();
 		ArrayList<Transicao> producoes = new ArrayList<>();
 		
-		char[] alfabeto = new char[26];
-		int i = -1;
+		ArrayList<Character> alfabeto = new ArrayList<>();
+		//int i = -1;
 		int mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar um símbolo (terminal) ao alfabeto?");
 		while(mais == 0) {
-			i++;
+			//i++;
 			String caracter = JOptionPane.showInputDialog("Digite o caracter (simbolo único, minusculo ou digito):");
 			char c = caracter.charAt(0);
-			alfabeto[i] = c;
+			alfabeto.add(c);
 			mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar mais um símbolo terminal?");
 		}
 		
@@ -147,7 +150,7 @@ public class Interface {
 		}
 		
 		g = new Gramatica(naoTerminais, alfabeto, producoes, inicial);
-		g.setPosicaoTerminais(i);
+		//g.setPosicaoTerminais(i);
 		System.out.println("Gramatica gerada: ");
 		Interface.mostraGramatica(g);
 		return g;
@@ -157,12 +160,12 @@ public class Interface {
 		ArrayList<Estado> naoTerminais = gramatica.getNaoTerminais();
 		ArrayList<Transicao> producoes = gramatica.getProducoes();
 		
-		char[] alfabeto = gramatica.getTerminais();
-		int i = gramatica.getPosicaoTerminais();
-		ArrayList<Character> novoAlfabeto = new ArrayList<>();
-		for (int a = 0; a < alfabeto.length; a++){
+		ArrayList<Character> alfabeto = gramatica.getTerminais();
+		//int i = gramatica.getPosicaoTerminais();
+/*		ArrayList<Character> novoAlfabeto = new ArrayList<>();
+		for (int a = 0; a < alfabeto.size(); a++){
 				novoAlfabeto.add(alfabeto[a]);
-		}
+		}*/
 		int mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar um símbolo (terminal) ao alfabeto?");
 		while(mais == 0) {
 			String caracter = JOptionPane.showInputDialog("Digite o caracter (simbolo único, minusculo ou digito):");
@@ -174,9 +177,9 @@ public class Interface {
 				}
 			}
 			if (!jahExiste){
-				i++;
-				alfabeto[i] = c;
-				novoAlfabeto.add(c);
+				//i++;
+				alfabeto.add(c);
+				//novoAlfabeto.add(c);
 			}
 			mais = JOptionPane.showConfirmDialog(null, "Deseja adicionar mais um símbolo terminal?");
 		}
@@ -192,18 +195,20 @@ public class Interface {
 				}
 			}
 			if (jahExiste){
-				novoAlfabeto.remove(c);
+				alfabeto.remove(c);
 			}
 			menos = JOptionPane.showConfirmDialog(null, "Deseja remover mais um símbolo terminal?");
 		}
 		//System.out.println(novoAlfabeto);
-		gramatica.setTerminais(novoAlfabeto);
+		//gramatica.setTerminais(novoAlfabeto);
 		for (int index = 0; index < producoes.size();index++){
 			Transicao trans = producoes.get(index);
-			if(!novoAlfabeto.contains(trans.getLeitura())){
+			if(!alfabeto.contains(trans.getLeitura())){
 				producoes.remove(trans);
 			}
 		}
+		//gramatica.setPosicaoTerminais(i);
+		
 		
 		String nomeEstado = JOptionPane.showInputDialog("Digite o nome do simbolo inicial:");
 		Estado inicialNovo = Principal.getEstadoPorNome(nomeEstado, naoTerminais); 

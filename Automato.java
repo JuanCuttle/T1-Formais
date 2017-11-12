@@ -8,13 +8,13 @@ public class Automato {
 	private boolean completo = false;
 	private boolean afnd = true;
 
-	private char[] alfabeto;
+	private ArrayList<Character> alfabeto;
 	private ArrayList<Estado> estados;
 	private ArrayList<Estado> finais;
 	private ArrayList<Transicao> transicoes;
 	private Estado inicial;
 
-	public Automato(char[] alfabeto, ArrayList<Estado> estados,
+	public Automato(ArrayList<Character> alfabeto, ArrayList<Estado> estados,
 			ArrayList<Estado> finais, ArrayList<Transicao> transicoes,
 			Estado inicial) {
 		this.alfabeto = alfabeto;
@@ -24,7 +24,7 @@ public class Automato {
 		this.inicial = inicial;
 	}
 
-	public char[] getAlfabeto() {
+	public ArrayList<Character> getAlfabeto() {
 		return alfabeto;
 	}
 
@@ -114,8 +114,8 @@ public class Automato {
 		Estado estadoDeErro = new Estado("qe");
 
 		if (!completo) {
-			for (char caracter : alfabeto) {
-				if (caracter != '&'){
+			for (Character caracter : alfabeto) {
+				if (caracter != '&' && !caracter.equals('\0')){
 					//System.out.println("Caracter atual:"+ caracter);
 					for (Estado estado : estados) {
 						//System.out.println("Estado atual:"+ estado.getNome());
@@ -138,6 +138,10 @@ public class Automato {
 
 			if (estadoErro) {
 				this.estados.add(estadoDeErro);
+				for (Character possiveis : alfabeto){
+					Transicao nova = new Transicao(estadoDeErro, possiveis, estadoDeErro);
+					this.getTransicoes().add(nova);
+				}
 			}
 			
 			this.completo = true;
@@ -341,6 +345,8 @@ public class Automato {
 	}
 	
 	public void determinizar() throws CloneNotSupportedException{
+		this.completarAutomato();
+		Interface.mostraAutomato(this);
 		Automato auxiliar = this;
 		ArrayList<Transicao> transicoesNovas = new ArrayList<>();
 		ArrayList<Transicao> transicoesRemover = new ArrayList<>();
@@ -355,12 +361,12 @@ public class Automato {
 			for (int i = 0; i<eAux.size();i++){
 				Estado e = eAux.get(i);
 				//erro.remove();
-				char[] cAux = this.getAlfabeto();
+				ArrayList<Character> cAux = this.getAlfabeto();
 				//for (char c : this.getAlfabeto()){
 				//while(erro2.hasNext()) {
-				for(int j = 0; j < cAux.length;j++){
+				for(int j = 0; j < cAux.size();j++){
 					//para cada par
-					char c = cAux[j];
+					char c = cAux.get(j);
 					ArrayList<Transicao> transicoesTemp = new ArrayList<>();
 					for (Transicao t : this.getTransicoes()){
 						if(t.getInicial() == e && t.getLeitura() == c){
@@ -382,7 +388,8 @@ public class Automato {
 						}
 						nomeNovoEstado += "]";
 						//System.out.println(nomeNovoEstado);
-						if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[") && nomeNovoEstado.contains(",q")){
+						//if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[") && nomeNovoEstado.contains(",q")){
+						if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[")){
 							if (!jahExiste(auxiliar, nomeNovoEstado)){
 								//if(true){
 								Estado nd = new Estado(nomeNovoEstado);
@@ -482,7 +489,8 @@ public class Automato {
 							}
 						}
 						nomeNovoEstado1 += "]";
-						if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")&& nomeNovoEstado1.contains(",q")){
+						//if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")&& nomeNovoEstado1.contains(",q")){
+						if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")){
 							if (!jahExiste(auxiliar, nomeNovoEstado1)){
 								//if(true){
 								Estado nd = new Estado(nomeNovoEstado1);
@@ -662,12 +670,12 @@ public class Automato {
 		for (int i = 0; i<eAux.size();i++){
 			Estado e = eAux.get(i);
 			//erro.remove();
-			char[] cAux = this.getAlfabeto();
+			ArrayList<Character> cAux = this.getAlfabeto();
 			//for (char c : this.getAlfabeto()){
 			//while(erro2.hasNext()) {
-			for(int j = 0; j < cAux.length;j++){
+			for(int j = 0; j < cAux.size();j++){
 				//para cada par
-				char c = cAux[j];
+				char c = cAux.get(j);
 				ArrayList<Transicao> transicoesTemp = new ArrayList<>();
 				for (Transicao t : this.getTransicoes()){
 					if(t.getInicial() == e && t.getLeitura() == c){
@@ -689,7 +697,8 @@ public class Automato {
 					}
 					nomeNovoEstado += "]";
 					//System.out.println(nomeNovoEstado);
-					if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[") && nomeNovoEstado.contains(",q")){
+					//if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[") && nomeNovoEstado.contains(",q")){
+					if (!nomeNovoEstado.contains("],]") && !nomeNovoEstado.contains("[[")){
 						if (!jahExiste(auxiliar, nomeNovoEstado)){
 							//if(true){
 							Estado nd = new Estado(nomeNovoEstado);
@@ -795,7 +804,8 @@ public class Automato {
 						}
 					}
 					nomeNovoEstado1 += "]";
-					if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")&& nomeNovoEstado1.contains(",q")){
+					//if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")&& nomeNovoEstado1.contains(",q")){
+					if (!nomeNovoEstado1.contains("],]") && !nomeNovoEstado1.contains("[[")){
 						if (!jahExiste(auxiliar, nomeNovoEstado1)){
 							//if(true){
 							Estado nd = new Estado(nomeNovoEstado1);
