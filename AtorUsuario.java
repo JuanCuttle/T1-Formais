@@ -12,6 +12,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JLabel;
+
 import java.awt.Font;
 
 
@@ -53,6 +54,28 @@ public class AtorUsuario extends JFrame {
 		
 		JMenu mnAutmatos = new JMenu("Automatos");
 		menuBar.add(mnAutmatos);
+		
+		JButton btnGerarGr = new JButton("Gerar GR");
+		btnGerarGr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String confirmP;
+				int i = 0;
+				String automatos = "";
+				for (Automato aut : Principal.automatosCriados){
+					automatos += "\nAutomato "+i+":\n";
+					automatos += Interface.mostraAutomato(aut);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Gerar a partir de qual automato?\n"+automatos);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					Principal.gramaticasCriadas.add(Principal.automatosCriados.get(escolhida).gerarGramatica());
+					//Interface.mostraAutomato(Principal.automatosCriados.get(0));
+					
+				}
+			}
+		});
+		mnAutmatos.add(btnGerarGr);
 		
 		JButton btnNewButton = new JButton("Determinizar");
 		mnAutmatos.add(btnNewButton);
@@ -194,6 +217,107 @@ public class AtorUsuario extends JFrame {
 			}
 		});
 		mnAutmatos.add(btnNewButton_4);
+		
+		JButton btnLinguagensIguais = new JButton("Linguagens iguais");
+		btnLinguagensIguais.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String confirmP;
+				int i = 0;
+				String automatos = "";
+				for (Automato aut : Principal.automatosCriados){
+					automatos += "\nAutomato "+i+":\n";
+					automatos += Interface.mostraAutomato(aut);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Selecione o primeiro autômato:\n"+automatos);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					//Principal.automatosCriados.get(escolhida).complemento();
+					String confirmP2;
+					int i2 = 0;
+					String automatos2 = "";
+					for (Automato aut : Principal.automatosCriados){
+						automatos2 += "\nAutomato "+i2+":\n";
+						automatos2 += Interface.mostraAutomato(aut);
+						i2++;
+					}
+					confirmP2 = JOptionPane.showInputDialog(null, "Selecione o segundo autômato:\n"+automatos2);
+					if (!confirmP.equals("")){
+						int escolhida2 = Integer.parseInt(confirmP2);
+						Automato um = Principal.automatosCriados.get(escolhida);
+						Automato dois = Principal.automatosCriados.get(escolhida2);
+						JOptionPane.showMessageDialog(null, (um.linguagensIguais(dois)));
+						
+					}
+					
+				}
+			}
+		});
+		mnAutmatos.add(btnLinguagensIguais);
+		
+		JButton btnLinguagemVaziafinitainfinita = new JButton("Linguagem vazia/finita/infinita");
+		btnLinguagemVaziafinitainfinita.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String confirmP;
+				int i = 0;
+				String automatos = "";
+				for (Automato aut : Principal.automatosCriados){
+					automatos += "\nAutomato "+i+":\n";
+					automatos += Interface.mostraAutomato(aut);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Escolha o autômato:\n"+automatos);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					Automato aut = Principal.automatosCriados.get(escolhida);
+					if (aut.linguagemVazia()){
+						JOptionPane.showMessageDialog(null, ("O estado inicial não é fértil, logo a linguagem é vazia"));
+					} else if (aut.linguagemFinita()){
+						JOptionPane.showMessageDialog(null, ("Não há recursão direta ou indireta, portanto a linguagem é finita"));
+					} else {
+						JOptionPane.showMessageDialog(null, ("Há recursão direta ou indireta, portanto a linguagem é infinita"));
+					}
+				}
+			}
+		});
+		mnAutmatos.add(btnLinguagemVaziafinitainfinita);
+		
+		JButton btnLrContidaEm = new JButton("LR contida em LR");
+		btnLrContidaEm.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String confirmP;
+				int i = 0;
+				String automatos = "";
+				for (Automato aut : Principal.automatosCriados){
+					automatos += "\nAutomato "+i+":\n";
+					automatos += Interface.mostraAutomato(aut);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Selecione o primeiro autômato:\n"+automatos);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					//Principal.automatosCriados.get(escolhida).complemento();
+					String confirmP2;
+					int i2 = 0;
+					String automatos2 = "";
+					for (Automato aut : Principal.automatosCriados){
+						automatos2 += "\nAutomato "+i2+":\n";
+						automatos2 += Interface.mostraAutomato(aut);
+						i2++;
+					}
+					confirmP2 = JOptionPane.showInputDialog(null, "Selecione o segundo autômato:\n"+automatos2);
+					if (!confirmP.equals("")){
+						int escolhida2 = Integer.parseInt(confirmP2);
+						Automato um = Principal.automatosCriados.get(escolhida);
+						Automato dois = Principal.automatosCriados.get(escolhida2);
+						JOptionPane.showMessageDialog(null, (um.contida(dois)));
+						
+					}
+					
+				}
+			}
+		});
+		mnAutmatos.add(btnLrContidaEm);
 		
 		JMenu mnGramaticas = new JMenu("Gramaticas");
 		menuBar.add(mnGramaticas);

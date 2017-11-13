@@ -126,10 +126,11 @@ public class Principal {
 		autU.determinizar();
 		//autU.removerInalcancaveis();
 		//autU.removerMortos();
-		//autU.minimizar();
-		autU.removerEquivalentes();
+		autU.minimizar();
+		//autU.removerEquivalentes();
 		Interface.mostraAutomato(autU);
 		
+		//aut.linguagensIguais(aut);
 		System.out.println(aut.linguagensIguais(aut));
 		
 		

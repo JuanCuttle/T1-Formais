@@ -47,7 +47,14 @@ public class Automato {
 	public boolean linguagensIguais(Automato aut){
 		Automato primeiro = this.interseccao(aut.complemento());
 		Automato segundo = aut.interseccao(this.complemento());
+/*		System.out.println(primeiro.linguagemVazia());
+		System.out.println(primeiro.linguagemVazia());*/
 		return primeiro.linguagemVazia() && segundo.linguagemVazia();
+	}
+	
+	public boolean contida(Automato aut){
+		Automato fora = this.interseccao(aut.complemento());
+		return fora.linguagemVazia();
 	}
 	
 	public Automato complemento(){
@@ -200,7 +207,7 @@ public class Automato {
 	public void minimizar(){
 		this.removerInalcancaveis();
 		this.removerMortos();
-		//this.removerEquivalentes();
+		this.removerEquivalentes();
 	}
 	public void removerInalcancaveis() {
 		ArrayList<Estado> acessados = new ArrayList<>();
@@ -344,6 +351,23 @@ public class Automato {
 				System.out.print(e.getNome());
 			}
 		}*/
+		for (ArrayList<Estado> a : gruposDeEquivalencia){
+			if(a.size() > 0){
+				Estado doGrupo = a.get(0);
+				a.remove(doGrupo);
+				for(Estado resto : a){
+					for (Transicao t : this.getTransicoesDoEstado(resto)){
+						Transicao tNew = new Transicao(t.getInicial(), t.getLeitura(), doGrupo);
+						this.transicoes.add(tNew);
+						this.transicoes.remove(t);
+					}
+					if(this.finais.contains(resto)){
+						this.finais.remove(resto);
+					}
+					this.estados.remove(resto);
+				}
+			}
+		}
 	}
 	
 	private boolean mesmoGrupo(
