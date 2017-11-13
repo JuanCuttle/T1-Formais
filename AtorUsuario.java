@@ -202,6 +202,24 @@ public class AtorUsuario extends JFrame {
 		mnGramaticas.add(btnCriarGramtica);
 		
 		JButton btnEditarGramtica = new JButton("Editar Gram\u00E1tica");
+		btnEditarGramtica.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String confirmP;
+				int i = 0;
+				String gramaticas = "";
+				for (Gramatica g : Principal.gramaticasCriadas){
+					gramaticas += "\nGramatica "+i+":\n";
+					gramaticas += Interface.mostraGramatica(g);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Deseja editar qual gramatica?\n"+gramaticas);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					Interface.editarGramatica(Principal.gramaticasCriadas.get(escolhida));
+					
+				}
+			}
+		});
 		mnGramaticas.add(btnEditarGramtica);
 		
 		JButton btnGerarAutomato = new JButton("Gerar Automato");
@@ -230,27 +248,36 @@ public class AtorUsuario extends JFrame {
 		menuBar.add(mnExpressoes);
 		
 		JButton btnCriarExpressoRegular = new JButton("Criar Express\u00E3o Regular");
+		btnCriarExpressoRegular.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Principal.expressoesCriadas.add(Interface.criarER());
+			}
+		});
 		mnExpressoes.add(btnCriarExpressoRegular);
 		
 		JButton btnEditarEr = new JButton("Editar ER");
+		btnEditarEr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String confirmP;
+				int i = 0;
+				String expressoes = "";
+				for (Expressao g : Principal.expressoesCriadas){
+					expressoes += "\nExpressao "+i+":\n";
+					expressoes += Interface.mostraER(g);
+					i++;
+				}
+				confirmP = JOptionPane.showInputDialog(null, "Deseja editar qual ER?\n"+expressoes);
+				if (!confirmP.equals("")){
+					int escolhida = Integer.parseInt(confirmP);
+					Interface.editarER(Principal.expressoesCriadas.get(escolhida));
+					
+				}
+			}
+		});
 		mnExpressoes.add(btnEditarEr);
 		btnEditarGramtica.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseReleased(MouseEvent arg0) {
-				String confirmP;
-				int i = 0;
-				String gramaticas = "";
-				for (Gramatica g : Principal.gramaticasCriadas){
-					gramaticas += "\nGramatica "+i+":\n";
-					gramaticas += Interface.mostraGramatica(g);
-					i++;
-				}
-				confirmP = JOptionPane.showInputDialog(null, "Deseja editar qual ER?\n"+gramaticas);
-				if (!confirmP.equals("")){
-					int escolhida = Integer.parseInt(confirmP);
-					//Interface.editarGramatica(Principal.gramaticasCriadas.get(escolhida));
-					
-				}
 			}
 		});
 		btnCriarGramtica.addActionListener(new ActionListener() {

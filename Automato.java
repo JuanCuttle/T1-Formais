@@ -200,7 +200,7 @@ public class Automato {
 	public void minimizar(){
 		this.removerInalcancaveis();
 		this.removerMortos();
-		this.removerEquivalentes();
+		//this.removerEquivalentes();
 	}
 	public void removerInalcancaveis() {
 		ArrayList<Estado> acessados = new ArrayList<>();
@@ -301,9 +301,136 @@ public class Automato {
 	
 	public void removerEquivalentes() {
 		// TODO Auto-generated method stub
-		
+		ArrayList<ArrayList<Estado>> gruposDeEquivalencia = new ArrayList<>();
+		ArrayList<Estado> naoFinais = this.getNaoFinais();
+		gruposDeEquivalencia.add((ArrayList<Estado>) this.finais.clone());
+		gruposDeEquivalencia.add((ArrayList<Estado>) naoFinais.clone());
+		boolean criouNovasClasses = false;
+		do {
+			criouNovasClasses = false;
+			for (int i = 0; i < gruposDeEquivalencia.size();i++){
+				ArrayList<Estado> grupo = gruposDeEquivalencia.get(i);
+				ArrayList<Estado> possivelNovoGrupo = new ArrayList<>();
+				for (int j = 0; j < grupo.size();j++){
+					Estado e = grupo.get(j);
+					
+					// Para cada estado do grupo, comparar com os outros
+					for (Estado comparado : grupo){
+						if (!this.mesmasTransicoes(getTransicoesDoEstado(e), getTransicoesDoEstado(comparado))){
+							grupo.remove(e);
+							possivelNovoGrupo.add(e);
+							criouNovasClasses = true;
+							break;
+						// Se as transicoes pertencem ao mesmo grupo, trocar o grupo
+						} else if (!this.mesmoGrupo(gruposDeEquivalencia, getTransicoesDoEstado(e), getTransicoesDoEstado(comparado))){
+							grupo.remove(e);
+							possivelNovoGrupo.add(e);
+							criouNovasClasses = true;
+							break;
+						}
+					}
+				}
+				if (!possivelNovoGrupo.isEmpty()){
+					gruposDeEquivalencia.add(possivelNovoGrupo);
+				} else {
+					break;
+				}
+			}
+		} while(criouNovasClasses == true);
+		// Remover os estados a mais (mais de um no mesmo grupo) (substituir as transicoes de um pelo que sobrar
+		System.out.println(gruposDeEquivalencia);
+/*		for (ArrayList<Estado> a : gruposDeEquivalencia){
+			for (Estado e : a){
+				System.out.print(e.getNome());
+			}
+		}*/
 	}
 	
+	private boolean mesmoGrupo(
+			ArrayList<ArrayList<Estado>> gruposDeEquivalencia,
+			ArrayList<Transicao> transicoesDoEstado,
+			ArrayList<Transicao> transicoesDoEstado2) {
+		for (Character c : this.getAlfabeto()){
+			for (Transicao t1 : transicoesDoEstado){
+				for (Transicao t2 : transicoesDoEstado2){
+					if(t1.getLeitura() == c && t2.getLeitura() == c){
+						Estado final1 = t1.get_final();
+						Estado final2 = t2.get_final();
+						for (ArrayList<Estado> array : gruposDeEquivalencia){
+							if (array.contains(final1)){
+								if (!array.contains(final2)){
+									return false;
+								}
+							} else {
+								if (array.contains(final2)){
+									return false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+/*		for (Transicao t : transicoesDoEstado){
+			for (Transicao t2 : transicoesDoEstado2){
+				if (t.getLeitura() == t2.getLeitura()){
+					Estado final1 = t.get_final();
+					Estado final2 = t2.get_final();
+					//System.out.println(t.getInicial());
+					for (ArrayList<Estado> array : gruposDeEquivalencia){
+							if ((array.contains(final1) && !array.contains(final2))
+									|| (array.contains(final2) && !array.contains(final1))){
+								return false;
+							}
+					}
+				}
+			}
+		}*/
+		return true;
+	}
+
+	private boolean mesmasTransicoes(ArrayList<Transicao> transicoesDoEstado,
+			ArrayList<Transicao> transicoesDoEstado2) {
+		ArrayList<Boolean> iguais = new ArrayList<>();
+		
+		for (Transicao t : transicoesDoEstado){
+			boolean possuiTransicao = false;
+			for (Transicao t2 : transicoesDoEstado2){
+				if (t.get_final() == t2.get_final() && t.getLeitura() == t2.getLeitura()){
+					possuiTransicao = true;
+				}
+			}
+			iguais.add(possuiTransicao);
+		}
+		
+		for (Transicao t : transicoesDoEstado2){
+			boolean possuiTransicao = false;
+			for (Transicao t2 : transicoesDoEstado){
+				if (t.get_final() == t2.get_final() && t.getLeitura() == t2.getLeitura()){
+					possuiTransicao = true;
+				}
+			}
+			iguais.add(possuiTransicao);
+		}
+		for (Boolean b : iguais){
+			if(b == false){
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private ArrayList<Estado> getNaoFinais() {
+		ArrayList<Estado> naoFinais = new ArrayList<>();
+		for (Estado e : estados){
+			if(!finais.contains(e)){
+				naoFinais.add(e);
+			}
+		}
+		return naoFinais;
+	}
+
 	public boolean linguagemVazia(){
 		Automato aux = this;
 		aux.completarAutomato();
@@ -346,7 +473,7 @@ public class Automato {
 	
 	public void determinizar() throws CloneNotSupportedException{
 		this.completarAutomato();
-		Interface.mostraAutomato(this);
+		//Interface.mostraAutomato(this);
 		Automato auxiliar = this;
 		ArrayList<Transicao> transicoesNovas = new ArrayList<>();
 		ArrayList<Transicao> transicoesRemover = new ArrayList<>();
@@ -614,7 +741,7 @@ public class Automato {
 				}
 			}
 			//this.determinizar();
-			this.removerEquivalentes();
+			//this.removerEquivalentes();
 			//this.removerInalcancaveis();
 			this.estados = auxiliar.getEstados();
 			this.transicoes.addAll(transicoesNovas);
@@ -622,6 +749,7 @@ public class Automato {
 			while(this.possuiNaoDeterminacao()){
 				this.redeterminizar();
 			}
+			//this.removerEquivalentes();
 /*			this.completo = false;
 			this.completarAutomato();*/
 			this.afnd = false;
@@ -902,7 +1030,7 @@ public class Automato {
 			}
 		}
 		//this.determinizar();
-		this.removerEquivalentes();
+		//this.removerEquivalentes();
 		//this.removerInalcancaveis();
 		this.estados = auxiliar.getEstados();
 		this.transicoes.addAll(transicoesNovas);

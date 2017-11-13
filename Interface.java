@@ -332,4 +332,22 @@ public class Interface {
 			nt.getEstadosInternos().add(nt);
 		}		
 	}
+
+	public static Expressao criarER() {
+		String nome = JOptionPane.showInputDialog("Digite a expressão regular");
+		Expressao e = new Expressao(nome);
+		return e;
+	}
+
+	public static void editarER(Expressao exp) {
+		String nomeNovo = JOptionPane.showInputDialog("Digite a expressão regular", exp.getNome());
+		exp.setNome(nomeNovo);
+		
+	}
+
+	public static String mostraER(Expressao exp) {
+		String ER = exp.getNome();
+		ER += "\n";
+		return ER;
+	}
 }
