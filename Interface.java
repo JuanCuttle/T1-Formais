@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class Interface {
+	
+	// Gera uma string para facilitar a visualizacao do automato
 	public static String mostraAutomato(Automato aut) {
 		String tabela = "";
 		for (Character c : aut.getAlfabeto()) {
@@ -50,6 +52,7 @@ public class Interface {
 		return tabela;
 	}
 
+	// Gera uma string para faciliar a visualizacao de uma gramatica
 	public static String mostraGramatica(Gramatica g) {
 		String gram = "";
 		for (Estado e : g.getNaoTerminais()) {
@@ -82,6 +85,7 @@ public class Interface {
 		return gram;
 	}
 	
+	// Permite que o usuario interaja com o modelo, para construir uma gramatica nova
 	public static Gramatica criarGramatica(){
 		Gramatica g = null;
 		ArrayList<Estado> naoTerminais = new ArrayList<>();
@@ -156,6 +160,7 @@ public class Interface {
 		return g;
 	}
 
+	// Permite ao usuario interagir com o modelo, de forma a editar uma gramatica previamente criada
 	public static void editarGramatica(Gramatica gramatica) {
 		ArrayList<Estado> naoTerminais = gramatica.getNaoTerminais();
 		ArrayList<Transicao> producoes = gramatica.getProducoes();
@@ -332,19 +337,22 @@ public class Interface {
 			nt.getEstadosInternos().add(nt);
 		}		
 	}
-
+	
+	// Permite ao usuario criar uma expressao regular
 	public static Expressao criarER() {
 		String nome = JOptionPane.showInputDialog("Digite a expressão regular");
 		Expressao e = new Expressao(nome);
 		return e;
 	}
 
+	// Permite ao usuario editar uma expressao regular jah criada
 	public static void editarER(Expressao exp) {
 		String nomeNovo = JOptionPane.showInputDialog("Digite a expressão regular", exp.getNome());
 		exp.setNome(nomeNovo);
 		
 	}
 
+	// Gera uma string para facilitar a visualizacao de expressoes regulares
 	public static String mostraER(Expressao exp) {
 		String ER = exp.getNome();
 		ER += "\n";

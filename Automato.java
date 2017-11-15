@@ -44,6 +44,8 @@ public class Automato {
 		return inicial;
 	}
 	
+	// Cria o automato M1 interseccao ~M2 (se M1 está contido em M2, a LR será vazia), e o automato M2 interseccao ~M1
+	// (Se M2 está contido em M1, a LR do resultante será vazia). Se ambas forem vazias, são iguais.
 	public boolean linguagensIguais(Automato aut){
 		Automato primeiro = this.interseccao(aut.complemento());
 		Automato segundo = aut.interseccao(this.complemento());
@@ -52,11 +54,13 @@ public class Automato {
 		return primeiro.linguagemVazia() && segundo.linguagemVazia();
 	}
 	
+	// Se M1 interseccao ~M2, o automato resultante terá linguagem vazia
 	public boolean contida(Automato aut){
 		Automato fora = this.interseccao(aut.complemento());
 		return fora.linguagemVazia();
 	}
 	
+	// Torna os estados nao-finais em finais, e vice-versa
 	public Automato complemento(){
 		ArrayList<Estado> novosFinais = new ArrayList<>();
 		for (Estado e : this.estados){
@@ -67,6 +71,7 @@ public class Automato {
 		return new Automato(this.alfabeto, this.estados, novosFinais, this.transicoes, this.inicial);
 	}
 
+	// Cria um novo inicial, e copia as transicoes dos iniciais para o novo (thompson sem epsilon-transicao)
 	public Automato uniao(Automato aUnir){
 		Estado novoInicial = new Estado("Qinicial");
 		Estado inicial1 = this.getInicial();
@@ -99,11 +104,14 @@ public class Automato {
 		return new Automato(this.getAlfabeto(), novosEstados, novosFinais, transicoesNovoInicial, novoInicial);
 	}
 	
+	// Usa a propriedade da teoria de conjuntos para fazer a interseccao a partir do complemento da uniao dos complementos
 	public Automato interseccao(Automato aIntersec){
 		// L1 ^ L2 = not(not(L1)U(not(L2)))
 		Automato intersec = (this.complemento().uniao(aIntersec.complemento())).complemento();
 		return intersec;
 	}
+	
+	// Nao usado, apenas transita entre estados como se o automato estivesse sendo usado
 	public ArrayList<Estado> transicao(Estado inicial, char leitura) {
 		ArrayList<Estado> possiveis = new ArrayList<Estado>();
 		for (Transicao transicao : transicoes) {
@@ -115,6 +123,7 @@ public class Automato {
 		return possiveis;
 	}
 
+	// Para todos simbolos onde nao há transicao, criar a transicao para um estado novo (de erro)
 	public void completarAutomato() {
 		boolean temtransicao = false;
 		boolean estadoErro = false;
@@ -159,6 +168,8 @@ public class Automato {
 
 	}
 
+	// Copia os conjuntos de automato para gramatica, apenas interpretando os estados finais como novas transicoes na gramatica
+	//, onde apenas um simbolo eh gerado e ela encerra as producoes
 	public Gramatica gerarGramatica() {
 		ArrayList<Transicao> novaTransicoes = (ArrayList<Transicao>) this.transicoes.clone();
 		//Estado a = new Estado("A");
@@ -203,12 +214,14 @@ public class Automato {
 		}*/
 		
 	}
-	
+	// Na ordem para evitar ter que repetir passos, remove os estados mortos, os estados inalcancaveis e os estados equivalentes
 	public void minimizar(){
-		this.removerInalcancaveis();
 		this.removerMortos();
+		this.removerInalcancaveis();
 		this.removerEquivalentes();
 	}
+	
+	// Comeca no estado inicial. Adiciona os estados alcancaveis a partir do atual e marca eles. Continua por todos os estados até sobrarem apenas estados marcados
 	public void removerInalcancaveis() {
 		ArrayList<Estado> acessados = new ArrayList<>();
 		ArrayList<Estado> aux = new ArrayList<>();
@@ -258,7 +271,8 @@ public class Automato {
 		}*/
 		
 	}
-
+	
+	// Similar a remocao de inalcancaveis, porem comeca nos finais
 	public void removerMortos() {
 		ArrayList<Estado> acessados = new ArrayList<>();
 		ArrayList<Estado> aux = new ArrayList<>();
@@ -306,6 +320,8 @@ public class Automato {
 		}*/
 	}
 	
+	// Checa por equivalencias entre estados, usando o metodo visto em sala, o qual separa os estados em conjuntos
+	// de equivalencia, até nenhum conjunto novo ser criado
 	public void removerEquivalentes() {
 		// TODO Auto-generated method stub
 		ArrayList<ArrayList<Estado>> gruposDeEquivalencia = new ArrayList<>();
@@ -370,6 +386,7 @@ public class Automato {
 		}
 	}
 	
+	// funcao que verifica se dois estados pertencem ao mesmo grupo de equivalencia, com base em suas transicoes
 	private boolean mesmoGrupo(
 			ArrayList<ArrayList<Estado>> gruposDeEquivalencia,
 			ArrayList<Transicao> transicoesDoEstado,
@@ -413,7 +430,8 @@ public class Automato {
 		}*/
 		return true;
 	}
-
+	
+	// verifica se um estado possui as mesmas transicoe de outro
 	private boolean mesmasTransicoes(ArrayList<Transicao> transicoesDoEstado,
 			ArrayList<Transicao> transicoesDoEstado2) {
 		ArrayList<Boolean> iguais = new ArrayList<>();
@@ -455,6 +473,7 @@ public class Automato {
 		return naoFinais;
 	}
 
+	//verifica se o estado inicial eh infertil
 	public boolean linguagemVazia(){
 		Automato aux = this;
 		aux.completarAutomato();
@@ -474,6 +493,7 @@ public class Automato {
 		return false;
 	}*/
 
+	// Procura por recursoes no automato, se tiver, a linguagem eh infinita
 	public boolean linguagemFinita(){
 		ArrayList<Estado> aux = new ArrayList<>();
 		for (Estado e : estados) {
@@ -495,6 +515,7 @@ public class Automato {
 		return true;
 	}
 	
+	// Gera estados compostos a partir das indeterminacoes, e adapta o automato para transitar para estes novos estados, determinizando-o
 	public void determinizar() throws CloneNotSupportedException{
 		this.completarAutomato();
 		//Interface.mostraAutomato(this);
@@ -783,6 +804,7 @@ public class Automato {
 		
 	}
 
+	// Verifica se o automato eh nao-deterministico
 	private boolean possuiNaoDeterminacao() {
 		ArrayList<Estado> _finais = new ArrayList<>();
 		for (Estado e : this.getEstados()){
@@ -802,6 +824,7 @@ public class Automato {
 		return false;
 	}
 
+	// Pega o estado pelo nome. Auxiliar em algumas funcoes maiores
 	private Estado getEstadoPorNome(String nomeNovoEstado) {
 		for (Estado e : this.estados){
 			if(e.getNome().equalsIgnoreCase(nomeNovoEstado)){
@@ -811,6 +834,7 @@ public class Automato {
 		return null;
 	}
 
+	// auxiliar para a determinizacao, essencialmente serve para repetir o procedimento ateh nao haverem mais indeterminizacoes
 	private void redeterminizar() {
 		Automato auxiliar = this;
 		ArrayList<Transicao> transicoesNovas = new ArrayList<>();
@@ -1061,6 +1085,7 @@ public class Automato {
 		this.transicoes.removeAll(transicoesRemover);
 	}
 
+	// Verifica se o automato possui determinada transicao
 	private boolean possuiTransicao(ArrayList<Transicao> transicoesNovas,
 			Transicao n) {
 		for (Transicao t : transicoesNovas){
@@ -1071,6 +1096,7 @@ public class Automato {
 		return false;
 	}
 
+	// Verifica se um estado com o nome "nomeNovoEstado" jah existe. Auxilia na determinizacao
 	private boolean jahExiste(Automato aux, String nomeNovoEstado) {
 		for (Estado e : aux.getEstados()){
 			if(e.getNome().contains(nomeNovoEstado)){
@@ -1080,6 +1106,7 @@ public class Automato {
 		return false;
 	}
 
+	// Pega as transicoes do estado e
 	private ArrayList<Transicao> getTransicoesDoEstado(Estado e) {
 		ArrayList<Transicao> tPorEstado = new ArrayList<>();
 		for (Transicao t : this.getTransicoes()){
@@ -1089,7 +1116,8 @@ public class Automato {
 		}
 		return tPorEstado;
 	}
-
+	
+	// Troca os estadoss finais por nao-finais e vice-versa, sem retornar um novo automato
 	@SuppressWarnings("unchecked")
 	public void complementar() {
 		ArrayList<Estado> novosFinais = new ArrayList<>();

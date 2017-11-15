@@ -15,7 +15,7 @@ public class Producao {
 		return leitura;
 	}
 	public NaoTerminal getVn1() {
-		return vn;
+		return vn1;
 	}
 	public void setVn1(NaoTerminal vn1) {
 		this.vn1 = vn1;

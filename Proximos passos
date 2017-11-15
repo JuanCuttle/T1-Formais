@@ -3,3 +3,4 @@
 3) setar os estados compostos por 1+ finais como final, na determinização (feito)
 4) Interseccao feita (falta testar)
 5) Corrigir remoção de inférteis (similar à correção feita no removerInalcancaveis) (TESTAR)
+6) Efetivamente remover os estados equivalentes
