@@ -37,7 +37,7 @@ public class Gramatica {
 	// Copia os conjuntos para os de automato, e gera o estado final "A", o qual seria o final (jah que gramaticas nao explicitam estado final)
 	public Automato gerarAutomato(){
 		ArrayList<Transicao> novaTransicoes = (ArrayList<Transicao>) this.producoes.clone();
-		Estado a = new Estado("A");
+		Estado a = new Estado("Qf");
 		a.getEstadosInternos().add(a);
 		
 		ArrayList<Estado> finais = new ArrayList<>();

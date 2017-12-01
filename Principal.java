@@ -134,6 +134,10 @@ public class Principal {
 		System.out.println(aut.linguagensIguais(aut));
 		
 		
+		String string = "S -> aA | bS | a | b, A-> aS | bA";
+		
+		Interface.criaGramaticaParse(string);
+		
 /*		Estado s = new Estado("S");
 		//Estado a5 = new Estado("A");
 		ArrayList<Estado> e1 = new ArrayList<>();

@@ -1099,7 +1099,7 @@ public class Automato {
 	// Verifica se um estado com o nome "nomeNovoEstado" jah existe. Auxilia na determinizacao
 	private boolean jahExiste(Automato aux, String nomeNovoEstado) {
 		for (Estado e : aux.getEstados()){
-			if(e.getNome().contains(nomeNovoEstado)){
+			if(e.getNome().equals(nomeNovoEstado)){
 				return true;
 			}
 		}

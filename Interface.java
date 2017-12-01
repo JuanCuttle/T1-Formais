@@ -115,7 +115,14 @@ public class Interface {
 			Estado novo = new Estado(nome);
 			naoTerminais.add(novo);
 			
-			confirmE = JOptionPane.showConfirmDialog(null, "Deseja criar mais um simbolo terminal?");
+			confirmE = JOptionPane.showConfirmDialog(null, "Deseja criar mais um simbolo não-terminal?");
+		}
+		
+		for (int z = 0; z < naoTerminais.size(); z++){
+			Estado nulo = naoTerminais.get(z);
+			if (nulo.getNome() == null){
+				naoTerminais.remove(nulo);
+			}
 		}
 		
 		int confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar uma produção?");
@@ -215,15 +222,17 @@ public class Interface {
 		//gramatica.setPosicaoTerminais(i);
 		
 		
-		String nomeEstado = JOptionPane.showInputDialog("Digite o nome do simbolo inicial:");
+/*		String nomeEstado = JOptionPane.showInputDialog("Digite o nome do simbolo inicial:");
 		Estado inicialNovo = Principal.getEstadoPorNome(nomeEstado, naoTerminais); 
 		if (inicialNovo != null){
+			System.out.println(inicialNovo.getNome());
 			gramatica.setInicial(inicialNovo);
 		} else {
+			System.out.println("nulo");
 			Estado inicial = new Estado(nomeEstado);
 			naoTerminais.add(inicial);
 			gramatica.setInicial(inicialNovo);
-		}
+		}*/
 /*		int inicialFinal = JOptionPane.showConfirmDialog(null, "O simbolo inicial é final?");
 		if (inicialFinal == 0){
 			finais.add(inicial);
@@ -234,6 +243,7 @@ public class Interface {
 			Estado estadoNovo = Principal.getEstadoPorNome(nome, naoTerminais);
 			if (estadoNovo == null){
 				Estado novo = new Estado(nome);
+				novo.getEstadosInternos().add(novo);
 				naoTerminais.add(novo);
 			} else {
 				JOptionPane.showMessageDialog(null, "Este estado já existe!");
@@ -255,14 +265,21 @@ public class Interface {
 			confirmE2 = JOptionPane.showConfirmDialog(null, "Deseja remover mais um simbolo não-terminal?");
 		}
 		
+		for (int z = 0; z < naoTerminais.size(); z++){
+			Estado nulo = naoTerminais.get(z);
+			if (nulo.getNome() == null || nulo == null){
+				naoTerminais.remove(nulo);
+			}
+		}
+		
 		for (int index = 0; index < producoes.size();index++){
 			Transicao trans = producoes.get(index);
-			if(!naoTerminais.contains(trans.getInicial()) || !naoTerminais.contains(trans.get_final()) && trans.get_final() != null){
+			if(!naoTerminais.contains(trans.getInicial()) || (!naoTerminais.contains(trans.get_final()) && trans.get_final() != null) || trans.getInicial() == null){
 				producoes.remove(trans);
 			}
 		}
 		
-		String gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+		String gram = Interface.mostraGramatica(gramatica);
 		int confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar uma produção?\n"+"Gramatica atual:\n"+gram);
 		while (confirmP == 0){
 			String nomeI = JOptionPane.showInputDialog("Digite o nome do estado no lado esquerdo da produção nova:");
@@ -294,7 +311,7 @@ public class Interface {
 					
 				}
 			}
-			gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+			gram = Interface.mostraGramatica(gramatica);
 			confirmP = JOptionPane.showConfirmDialog(null, "Deseja criar mais uma produção?\n"+"Gramatica atual:\n"+gram);
 		}
 		
@@ -329,13 +346,13 @@ public class Interface {
 					
 				}
 			}
-			gram = Interface.mostraGramatica(new Gramatica(naoTerminais, alfabeto, producoes, inicialNovo));
+			gram = Interface.mostraGramatica(gramatica);
 			confirmP2 = JOptionPane.showConfirmDialog(null, "Deseja remover mais uma produção?\n"+"Gramatica atual:\n"+gram);
 		}
 		// Adicionar os proprios estados na composicao de cada estado
-		for (Estado nt : naoTerminais){
+/*		for (Estado nt : naoTerminais){
 			nt.getEstadosInternos().add(nt);
-		}		
+		}	*/	
 	}
 	
 	// Permite ao usuario criar uma expressao regular
@@ -358,4 +375,114 @@ public class Interface {
 		ER += "\n";
 		return ER;
 	}
+	
+	public static Gramatica criaGramaticaParse(String entrada){
+		ArrayList<Character> auxiliar = new ArrayList<>();
+		for (Character c : entrada.toCharArray()){
+			if((int)c != 32){
+				auxiliar.add(c);
+			}
+		}
+		
+		//System.out.println(auxiliar);
+		
+		ArrayList<Estado> naoTerminaisAux = new ArrayList<>();
+		ArrayList<Character> terminaisAux = new ArrayList<>();
+		ArrayList<Transicao> producoesAux = new ArrayList<>();
+		int i = 0;
+		for (int k = 0; k < auxiliar.size(); k++){
+			Character aux0 = auxiliar.get(k);
+			if ((int)aux0 <= 90 && (int) aux0 >=65){
+				if (i+1 < auxiliar.size() && auxiliar.get(i+1) == '-'){
+					if (Principal.getEstadoPorNome(aux0.toString(), naoTerminaisAux) == null){
+						Estado e = new Estado(aux0.toString());
+						naoTerminaisAux.add(e);
+					}
+				}
+			}
+		}
+		do{
+			Character aux = auxiliar.get(i);
+			if (i+1 < auxiliar.size() && auxiliar.get(i+1) == '-'){
+				if (Principal.getEstadoPorNome(aux.toString(), naoTerminaisAux) == null){
+					Estado e = new Estado(aux.toString());
+					naoTerminaisAux.add(e);
+				}
+			} else if(aux == '>' || aux == '|'){
+				int r = i;
+				Character retorno = auxiliar.get(r);
+				do{
+					r--;
+					retorno = auxiliar.get(r);
+				}while(retorno != '-');
+				retorno = auxiliar.get(r-1);
+				//System.out.println(retorno);
+				
+				int j = 1;
+				Character leitura = new Character(' ');
+				String destino = "";
+				while(auxiliar.get(i+j) != '|' && auxiliar.get(i+j) != ',' && i+j < auxiliar.size()-1){
+					Character aux2 = auxiliar.get(i+j);
+					//System.out.println(aux2);
+					leitura = aux2;
+					if (!terminaisAux.contains(aux2)){
+						terminaisAux.add(aux2);
+					}
+					if (i+j+1 < auxiliar.size()){
+						if (auxiliar.get(i+j+1) != '|' && auxiliar.get(i+j+1) != ','){
+							destino = auxiliar.get(i+j+1).toString();
+							//System.out.println(destino);
+						}
+					}
+					break;
+					
+				}
+				
+	/*			if (i+j == auxiliar.size()-1){
+					Character aux2 = auxiliar.get(i+j);
+					//System.out.println(aux2);
+					destino += aux2.toString();
+					if((int)aux2 <= 90 && (int) aux2 != 38){
+						if (Principal.getEstadoPorNome(aux2.toString(), naoTerminaisAux) == null){
+							naoTerminaisAux.add(new Estado(aux2.toString()));
+						}
+					} else{
+						if (!terminaisAux.contains(aux2)){
+							terminaisAux.add(aux2);
+						}
+					}
+				}*/
+				
+				Estado origem =  Principal.getEstadoPorNome(retorno.toString(), naoTerminaisAux);
+				Estado destinoE =  Principal.getEstadoPorNome(destino, naoTerminaisAux);
+				if (!Principal.possuiProducao(producoesAux, origem, leitura, destinoE)){
+					Transicao p = new Transicao(origem, leitura ,destinoE);
+					producoesAux.add(p);
+				}
+				//System.out.println(destino);
+				
+				//System.out.println(producoesAux.get(0).getInicial().getNome()+" -> "+ producoesAux.get(0).get_final());
+				//break;
+			}
+			i++;
+		}while(i < auxiliar.size());
+		
+		String inicialS = "";
+		Estado inicial = null;
+		do {
+			inicialS = JOptionPane.showInputDialog("Digite o nome do estado inicial: ");
+			if (inicialS != null && inicialS != ""){
+				inicial = Principal.getEstadoPorNome(inicialS, naoTerminaisAux);
+			}
+			
+		}while(inicial == null || inicialS == "");
+		System.out.println(inicial.getNome());
+		
+		System.out.println(naoTerminaisAux);
+		System.out.println(terminaisAux);
+		
+		Gramatica gramatica = new Gramatica(naoTerminaisAux, terminaisAux, producoesAux, inicial);
+		Interface.mostraGramatica(gramatica);
+		return gramatica;
+}
 }
